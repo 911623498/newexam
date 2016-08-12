@@ -46,6 +46,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('privilege/userDel','PrivilegeController@userDel'); //用户删除
     Route::any('privilege/userIni','PrivilegeController@userIni'); //用户密码初始化
 
+
     Route::any('privilege/role','PrivilegeController@role'); //角色
     Route::any('privilege/role_add','PrivilegeController@role_add'); //角色添加
     Route::any('privilege/role_update_name','PrivilegeController@role_update_name'); //角色名称修改

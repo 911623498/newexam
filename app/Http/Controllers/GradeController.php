@@ -107,7 +107,6 @@ class GradeController extends CommonController
         for($i=0;$i<count($new_grad);$i=$i+2)
         {
             $arr[$i]['chengji']=$new_grad[$i].",".$new_grad[$j];
-
             $j=$j+2;
         }
         $m=0;
@@ -189,6 +188,7 @@ class GradeController extends CommonController
         return view('grade.upgrade',['data'=>$res]);
     }
 
+
     /**
      * 查看成绩
      */
@@ -239,7 +239,7 @@ class GradeController extends CommonController
                 $data['pk_class'] = DB::table('man_student')->where(["cla_id" => $pk_id])->orderBy('stu_group', 'asc')->get();
                 $sum_cla = count($data['cla_class']);
                 $sum_pk = count($data['pk_class']);
-               //
+
                 //本班级分数
                 for($i=0;$i<$sum_cla;$i++){
                     for($j=1;$j<=20;$j++){
@@ -557,7 +557,7 @@ class GradeController extends CommonController
         header("Content-Type:application/force-download");
         header("Content-Type:application/vnd.ms-execl");
         header("Content-Type:application/octet-stream");
-        header("Content-Type:application/download");;
+        header("Content-Type:application/download");
         header('Content-Disposition:attachment;filename="'.date("Y-m-d")."-".$cla_name.'.xls"');
         header("Content-Transfer-Encoding:binary");
         $write->save('php://output');
