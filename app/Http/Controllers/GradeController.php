@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 use PHPExcel;
-class GradeController extends Controller
+class GradeController extends CommonController
 {
 
     /**
@@ -194,7 +194,7 @@ class GradeController extends Controller
      */
     public function look()
     {
-        session_start();
+
         @$role_id = $_SESSION['user']['role_id'];  //登录用户的角色
         @$cla_id = $_SESSION['user']['cla_id'];  //登录用户的学院（班级）
         switch ($role_id){
@@ -393,12 +393,42 @@ class GradeController extends Controller
 
                 return view('grade.xiclass',$data);
                 break;
+            case 8:
+                //校长
+                $res = DB::table('man_class')->where(["cla_pid" => 0])->get();
+                $data['data'] = $res;
+                return view('grade.xiaolook',$data);
+                break;
+            case 6:
+                //教务 （学院）查询这是哪个学院的教务 根据学院查询  系
+                $res = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
+                $cla_pid = $res[0]['cla_id']; //学院ID
+                $cla_name = $res[0]['cla_name']; //学院名称
+                $data['cla_name'] = $cla_name;
+                $data['data'] = DB::table('man_class')->where(["cla_pid" => $cla_pid])->paginate(5);
+                $data['role_id'] = $role_id;
+                $data['cla_id'] = $cla_id ;
+                //print_r($data);die;
+                return view('grade.jwlook',$data);
+                break;
             default :
                 return redirect('index/right');
                 break;
         }
     }
 
+
+    /**
+     * 校长查看学院下的专业
+     */
+    public function sel_xi( Request $request )
+    {
+        $cla_pid = $request->input('id');
+        $data['cla_id'] = $cla_pid;
+        $data['cla_name'] = $cla_pid = $request->input('cla_name');
+        $data['data'] = DB::table('man_class')->where(["cla_pid" => $data['cla_id']])->get();
+        return view('grade.xilook',$data);
+    }
 
 
     /**

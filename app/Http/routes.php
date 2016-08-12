@@ -93,7 +93,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('college/classadd','CollegeController@classadd'); //添加学院
     Route::any('college/pkclass','CollegeController@pkclass'); //pk班级
 
-
+    Route::any('college/jdes','CollegeController@jdes'); //阶段列表
+    Route::any('college/jdadd','CollegeController@jdadd'); //添加阶段
 
     /** 组建管理 */
     Route::any('group/ad_stu_massage','GroupController@ad_stu_massage'); //添加学生信息页面
@@ -116,6 +117,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('grade/sel_class1','GradeController@sel_class1'); //教务搜索班级成绩
     Route::any('grade/addgrad','GradeController@addgrad'); //录入成绩
     Route::any('grade/test','GradeController@test'); //小组列表
+    Route::any('grade/sel_classs','GradeController@sel_classs'); //学院查看专业下班级
+    Route::any('grade/sel_xi','GradeController@sel_xi'); //校长查看学院下系
 
     Route::any('grade/look_check','GradeController@look_check'); //查看未审核列表
     Route::any('grade/check_exam','GradeController@check_exam'); //查看未审核列表
@@ -132,5 +135,10 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('yield/zk','YieldController@zk'); //周考成才率
     Route::any('yield/img','YieldController@img'); //每周成才率
     Route::any('index/right','IndexController@right');
+
+    /*消息*/
+    Route::any('index/news','IndexController@news'); //消息
+
+
 
 });

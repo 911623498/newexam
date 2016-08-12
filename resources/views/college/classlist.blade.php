@@ -88,28 +88,11 @@ $(document).ready(function(){
     <tr>
     <td class="imgtd">{{ $user['cla_name'] }}</td>
 	<td>
-		
-		  @foreach ($jd as $us)
-		@foreach ($us as $uss)
-            @if($user['cla_pid']==$uss['cla_id'])
-                @foreach ($xy as $us)
-			 @if($us['cla_id']==$uss['cla_pid'])
-			 {{$us['cla_name']}}
-				 @endif
-				@endforeach
-            @endif
-        @endforeach
-        @endforeach
+        {{$xy}}
 	</td>
     <td>
+        {{$jd}}
 
-        @foreach ($jd as $us)
-		@foreach ($us as $uss)
-            @if($user['cla_pid']==$uss['cla_id'])
-                {{$uss['cla_name']}}
-            @endif
-        @endforeach
-        @endforeach
     </td>
         <td class="imgtd">{{ $user['cla_pk'] }}</td>
         <td class="imgtd">{{ $user['cla_tea'] }}</td>
@@ -152,10 +135,8 @@ $(document).ready(function(){
                     <input type="hidden" id="id" name="id" value=""/>
                     <p> 所属阶段：
                     <select name="cla_pid" id="">
-                        @foreach ($jd as $use)
-                        @foreach ($use as $user)
+                        @foreach ($xi as $user)
                         <option value="{{$user['cla_id']}}">{{$user['cla_name']}}</option>
-                        @endforeach
                         @endforeach
                     </select>
                         </p>

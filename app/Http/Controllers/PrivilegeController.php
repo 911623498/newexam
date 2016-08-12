@@ -24,7 +24,7 @@ class PrivilegeController extends CommonController
         $user_name = $request->input('use_name');
         $user_pwd = $request->input('use_pwd');
         $user_names = $request->input('use_names');
-        $class_id = $request->input('class_id');
+
         $preg = "/^\w{6,15}$/";
         if(!preg_match($preg,$user_name)){
             echo '用户名必须是6-15个字符';die;
@@ -33,13 +33,11 @@ class PrivilegeController extends CommonController
         if(!preg_match($preg1,$user_pwd)){
             echo '密码必须是6-15个字符';die;
         };
-        $preg2 = "/^*{2,6}$/u";
-        if(!preg_match($preg2,$user_names)){
-            echo '名字必须为2-6个字符';die;
-        };
-        if(empty($class_id)){
-            echo '学院必须选择';die;
-        }
+//        $preg2 = "/^*{2,6}$/u";
+//        if(!preg_match($preg2,$user_names)){
+//            echo '名字必须为2-6个字符';die;
+//        };
+
         $users = DB::table('man_user')->where(['use_name'=>$user_name])->get();
         if(!empty($users)){
             echo '用户名已存在';die;
