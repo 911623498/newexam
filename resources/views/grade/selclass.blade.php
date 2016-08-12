@@ -58,13 +58,16 @@
                 <li><label>班级名称：</label><input name="" type="text"  id='key' class="scinput" placeholder="请输入班级名称"/></li>
                 <li><label>&nbsp;</label><input name="" type="button" id='btn' class="scbtn" value="查询"/></li>
                 <span id='sp'></span>
+                <li style="margin-left: 400px;"><label>&nbsp;</label><input name="" type="button" id='check' class="scbtn" value="审核通过"/></li>
+                <li><label>&nbsp;</label><input name="" type="button" id='no_check' class="scbtn" value="审核不通过"/></li>
             </ul>
             <table class="tablelist">
                 <thead>
                 <tr>
                     <th><input name="" id="box" type="checkbox" value=""/></th>
-                    <th>专业<i class="sort"><img src="{{URL::asset('')}}images/px.gif" /></i></th>
+                    <th>班级<i class="sort"><img src="{{URL::asset('')}}images/px.gif" /></i></th>
                     <th>备注</th>
+                    <th>是否审核</th>
                     <th>操作</th>
                 </tr>
                 </thead>
@@ -75,7 +78,18 @@
                         <td>{{$v['cla_name']}}</td>
                         <td>{{$v['cla_intro']}}</td>
                         <td>
-                            <a href="{{URL('grade/sel_classs')}}?id={{$v['cla_id']}}&cla_name={{$v['cla_name']}}" class="tablelink">查看班级</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            @if($v['cla_check']==0)
+                                未审核
+                            @elseif($v['cla_check']==1)
+                                已通过
+                            @elseif($v['cla_check']==2)
+                                未通过
+                            @endif
+
+                        </td>
+                        <td>
+                            <a href="{{URL('grade/look_class')}}?id={{$v['cla_id']}}"  class="tablelink">查看</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a href="{{URL('grade/dc')}}?id={{$v['cla_id']}}" class="tablelink">导出</a>
                         </td>
                     </tr>
                 @endforeach
@@ -100,7 +114,7 @@
                 $("#sp").html("<font color='red'>*请输入班级名称</font>");
                 return;
             }else{
-                $.get("{{URL('grade/sel_class1')}}",{key:key,cla_id:cla_id},function(msg){
+                $.get("{{URL('grade/sel_class')}}",{key:key,cla_id:cla_id},function(msg){
 //                    alert(msg)
 //                    return;
                     var str = "";
@@ -111,6 +125,7 @@
                         str += "<td><input name='chk_list' type='checkbox' value='' /></td>";
                         str += "<td>"+item.cla_name+"</td>";
                         str += "<td>"+item.cla_intro+"</td>";
+                        str += "<td>已审核</td>";
                         str += "<td>"
                         str += "<a href={{URL('grade/look_class')}}?id="+item.cla_id+" class='tablelink'>查看</a>";
                         str += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -132,6 +147,54 @@
                 $("input[name='chk_list']").attr("checked", false);
             }
         });
+
+        //审核通过
+        $("#check").click(function(){
+            var ids = "";
+            var check = $(":input[name='chk_list']");
+            for( var i=0;i<check.length;i++ )
+            {
+                if(check[i].checked==true)
+                {
+                    ids +=','+check[i].value;
+                }
+            }
+            ids = ids.substr(1);
+            if(ids==""){
+                $("#sp").html("<font color='red'>*请选择审核班级</font>");
+            }else{
+                $("#sp").html("<font color='red'></font>");
+                $.get("{{URL('grade/check')}}",{ids:ids},function(msg){
+                    if(msg==1){
+                        window.location.reload();
+                    }
+                })
+            }
+        });
+
+        //审核不通过
+        $("#no_check").click(function(){
+            var ids = "";
+            var check = $(":input[name='chk_list']");
+            for( var i=0;i<check.length;i++ )
+            {
+                if(check[i].checked==true)
+                {
+                    ids +=','+check[i].value;
+                }
+            }
+            ids = ids.substr(1);
+            if(ids==""){
+                $("#sp").html("<font color='red'>*请选择审核班级</font>");
+            }else{
+                $("#sp").html("<font color='red'></font>");
+                $.get("{{URL('grade/no_check')}}",{ids:ids},function(msg){
+                    if(msg==1){
+                        window.location.reload();
+                    }
+                })
+            }
+        })
     </script>
 </div>
 </body>

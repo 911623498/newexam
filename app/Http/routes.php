@@ -112,6 +112,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('grade/no_check','GradeController@no_check'); //成绩审核(不通过)
     Route::any('grade/look_class','GradeController@look_class'); //教务查看班级成绩
     Route::any('grade/sel_class','GradeController@sel_class'); //教务搜索班级成绩
+    Route::any('grade/sel_class1','GradeController@sel_class1'); //教务搜索班级成绩
     Route::any('grade/addgrad','GradeController@addgrad'); //录入成绩
     Route::any('grade/test','GradeController@test'); //小组列表
 
@@ -121,6 +122,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('grade/exam_update','GradeController@exam_update'); //查看未审核列表
     Route::any('grade/exam_info','GradeController@exam_info'); //查看未审核列表
     Route::any('grade/dc','GradeController@dc'); //导出
+    Route::any('grade/sel_classs','GradeController@sel_classs'); //导出
 
 
     /** 成才率统计 */
