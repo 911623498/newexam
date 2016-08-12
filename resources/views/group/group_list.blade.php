@@ -7,6 +7,7 @@
 <link href="{{URL::asset('')}}css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="{{URL::asset('')}}js/jquery.js"></script>
 
+
 <script type="text/javascript">
 $(document).ready(function(){
   $(".click").click(function(){
@@ -31,7 +32,11 @@ $(document).ready(function(){
 
 </head>
 
-
+<style>
+    .inputstyle{
+        width: 100px;
+    }
+</style>
 <body>
 
     <div class="place">
@@ -43,47 +48,52 @@ $(document).ready(function(){
     </ul>
     </div>
 
+
     <div class="rightinfo">
+
+    <form action="{{url('group/daoru')}}" method="post" enctype="multipart/form-data">
         <div class="tools">
             <ul class="toolbar1">
-                <li><label>&nbsp;</label><input name="" type="button" class="btn" id='sc' value="生成账号"/></li>
+                <li><div><input type="file" name="student_list" class="inputstyle"></div></li>
+                <li><label>&nbsp;</label><input  type="submit" class="btn"  value="导入"/></li>
             </ul>
 
         </div>
+    </form>
 
 
+        <table class="tablelist">
+            <thead>
+            <tr>
+                <th><input name="" type="checkbox" value=""/></th>
+                <th>编号<i class="sort"><img src="{{URL::asset('')}}images/px.gif" /></i></th>
+                <th>姓名</th>
+                <th>组</th>
+                <th>学号</th>
+                <th>操作</th>
+            </tr>
+            </thead>
 
-    <table class="tablelist">
-        <thead>
-        <tr>
-            <th><input name="" type="checkbox" value=""/></th>
-            <th>编号<i class="sort"><img src="{{URL::asset('')}}images/px.gif" /></i></th>
-            <th>姓名</th>
-            <th>组</th>
-            <th>学号</th>
-            <th>操作</th>
-        </tr>
-        </thead>
+            <tbody id='eew'>
+            <?php
+            foreach($user_list as $k=>$v){
+            ?>
+            <tr id='qwe'>
+                <th><input name='' type='checkbox' /></th>
+                <th><?php echo $v['stu_id']?></th>
+                <th><span><?php echo $v['stu_name']?></span><input type='text' value='<?php echo $v['stu_name']?>' style='display: none'/></th>
+                <th><?php echo $v['stu_group']?></th>
+                <th><?php echo $v['stu_care']?></th>
+                <th><a href='javascript:' onclick='del(<?php echo $v['stu_id']?>)'>删除</a></th>
+                <input type='hidden' value='<?php echo $v['stu_id']?>'/>
+            </tr>
+            <?php
+            }
+            ?>
+            </tbody>
 
-        <tbody id='eew'>
-        <?php
-        foreach($user_list as $k=>$v){
-        ?>
-        <tr id='qwe'>
-            <th><input name='' type='checkbox' /></th>
-            <th><?php echo $v['stu_id']?></th>
-            <th><span><?php echo $v['stu_name']?></span><input type='text' value='<?php echo $v['stu_name']?>' style='display: none'/></th>
-            <th><?php echo $v['stu_group']?></th>
-            <th><?php echo $v['stu_care']?></th>
-            <th><a href='javascript:' onclick='del(<?php echo $v['stu_id']?>)'>删除</a></th>
-            <input type='hidden' value='<?php echo $v['stu_id']?>'/>
-        </tr>
-        <?php
-        }
-        ?>
-        </tbody>
-
-    </table>
+        </table>
+    <li class="paginItem"> <?php echo $user_list->render(); ?></li>
     <div class="tip">
         <div class="tiptop"><span>提示信息</span><a></a></div>
 
@@ -104,7 +114,6 @@ $(document).ready(function(){
 
 
 
-        <li class="paginItem"> <?php echo $user_list->render(); ?></li>
     </div>
 
     <script type="text/javascript">
@@ -114,56 +123,4 @@ $(document).ready(function(){
 </html>
 <script src="{{URL::asset('')}}js/jquery-1.9.1.min.js"></script>
 <script src="{{URL::asset('')}}js/jquery.selectlist.js"></script>
-<script type="text/javascript">
-    $("#sc").click(function(){
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        $.ajax({
-            type: "POST",
-            url: "{{url('group/sczh')}}",
-            data: "",
-            success: function(msg) {
 
-                    if (msg == 11) {
-                        alert("账号生成成功");
-                    } else if (msg == 11) {
-                        alert("账号生成失败");
-                    } else if (msg == 2333) {
-                        alert("本班账号已经生成");
-                    }
-            }
-        });
-    });
-    function del(stu_id){
-        last_id=$("tbody>tr:last>input:hidden").val();
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        $.ajax({
-            type: "POST",
-            url: "{{url('group/stu_del')}}",
-            data: "stu_id="+stu_id+"&last_id="+last_id,
-            success: function(msg) {
-               // alert(msg.stu_id);
-                //console.log(str[0].stu_care);
-                if(msg == 0){
-                    alert("删除失败");
-                }else{
-                    var str=eval("("+msg+")");
-                    $("#qwe").remove();
-                    var mvp="<tr id='qwe'><th><input name='' type='checkbox' /></th><th>"+str[0].stu_id+"</th><th>"+str[0].stu_name+"</th><th>"+str[0].stu_group+"</th> <th>"+str[0].stu_care+"</th><th><a href='javascript:' onclick='del("+str[0].stu_id+")'>删除</a></th><input type='hidden' value='"+str[0].stu_id+"'/></tr>";
-
-                       // alert(mvp);
-                    $("tbody>tr:last").after(mvp);
-                }
-            }
-        });
-    }
-
-</script>

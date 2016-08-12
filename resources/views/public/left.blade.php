@@ -81,6 +81,7 @@ $(function(){
                     <li><cite></cite><a href="{{URL('group/ad_stu_massage')}}" target="rightFrame">添加学生信息</a><i></i></li>
                     <li><cite></cite><a href="{{URL('group/chose_grouper')}}" target="rightFrame">学生小组PK</a><i></i></li>
                     <li><cite></cite><a href="{{URL('group/group_list')}}" target="rightFrame">学生列表</a><i></i></li>
+                    <li><cite></cite><a href="{{URL('group/fp_group')}}" target="rightFrame">分配小组</a><i></i></li>
                 </ul>
             </dd>
             <dd><div class="title"><span><img src="{{URL::asset('')}}images/leftico04.png" /></span>成绩管理</div>

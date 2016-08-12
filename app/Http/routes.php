@@ -104,6 +104,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('group/group_pk','GroupController@group_pk'); //学生信息列表
     Route::any('group/sczh','GroupController@sczh'); //学生信息生成账号
     Route::any('group/stu_del','GroupController@stu_del'); //学生信息删除
+    Route::any('group/daoru','GroupController@daoru'); //学生信息导入
+    Route::any('group/fp_group','GroupController@fp_group'); //分配小组
+    Route::any('group/fenpei','GroupController@fenpei'); //分配小组
 
 
     /** 成绩管理 */

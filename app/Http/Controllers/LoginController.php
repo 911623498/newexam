@@ -87,6 +87,7 @@ class LoginController extends Controller
             '添加学生信息'=>'group/ad_stu_massage',
             '学生信息PK列表'=>'group/chose_grouper',
             '学生信息列表'=>'group/group_list',
+            '分配小组' => 'group/fp_group',
             '查看成绩'=>'grade/look',
             '录入成绩'=>'grade/record',
             '每日成才率'=>'yield/index',
