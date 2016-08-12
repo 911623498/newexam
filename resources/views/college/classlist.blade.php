@@ -72,8 +72,11 @@ $(document).ready(function(){
     <tr>
     <th width="100px;">班级名称</th>
     <th>所属学院</th>
+    <th>所属阶段</th>
     <th>PK班级</th>
-    <th>描述</th>
+    <th>讲师</th>
+    <th>班级号</th>
+    <th>课程</th>
     <th>操作</th>
     </tr>
     </thead>
@@ -84,15 +87,33 @@ $(document).ready(function(){
 
     <tr>
     <td class="imgtd">{{ $user['cla_name'] }}</td>
+	<td>
+		
+		  @foreach ($jd as $us)
+		@foreach ($us as $uss)
+            @if($user['cla_pid']==$uss['cla_id'])
+                @foreach ($xy as $us)
+			 @if($us['cla_id']==$uss['cla_pid'])
+			 {{$us['cla_name']}}
+				 @endif
+				@endforeach
+            @endif
+        @endforeach
+        @endforeach
+	</td>
     <td>
 
-        @foreach ($xy as $us)
-            @if($user['cla_pid']===$us['cla_id'])
-                {{$us['cla_name']}}
+        @foreach ($jd as $us)
+		@foreach ($us as $uss)
+            @if($user['cla_pid']==$uss['cla_id'])
+                {{$uss['cla_name']}}
             @endif
+        @endforeach
         @endforeach
     </td>
         <td class="imgtd">{{ $user['cla_pk'] }}</td>
+        <td class="imgtd">{{ $user['cla_tea'] }}</td>
+        <td class="imgtd">{{ $user['cla_mph'] }}</td>
     <td><a href="#">{{ $user['cla_intro'] }}</a><p>发布时间：2013-10-12 09:25:18</p></td>
     <td><a href="#" onclick="disp_prompt({{$user['cla_id']}})">选择PK班级</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="#" onclick="fun2({{$user['cla_id'] }})">修改</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="{{URL('college/cladel')}}?id={{$user['cla_id'] }}">删除</a><p>ID: {{$user['cla_id']}}</p></td>
     </tr>
@@ -113,7 +134,6 @@ $(document).ready(function(){
     
    
     <div class="pagin">
-    	<div class="message">共<i class="blue">{{$count}}</i>条记录</div>
 
     </div>
     </div>
@@ -123,18 +143,22 @@ $(document).ready(function(){
 
             <div class="tipinfo">
                 <input type="hidden" id="token" name="_token" value="<?php echo csrf_token();?>"/>
-                <span><img src="{{URL::asset('')}}images/ticon.png" /></span>
+              
                 <div class="tipright">
                     <p>班级名称：<input type="text" id="cla_name" name="cla_name" onblur="fun1()"/></p>
-                    <p> 所属学院：
+					<p>班主任：<input type="text" id="cla_tea" name="cla_tea"/></p>
+					<p>门牌号：<input type="text" id="cla_mph" name="cla_mph"/></p>
+                    <p>课程：<input type="text" id="cla_intro" name="cla_intro"/></p>
+                    <input type="hidden" id="id" name="id" value=""/>
+                    <p> 所属阶段：
                     <select name="cla_pid" id="">
-                        @foreach ($xy as $user)
+                        @foreach ($jd as $use)
+                        @foreach ($use as $user)
                         <option value="{{$user['cla_id']}}">{{$user['cla_name']}}</option>
+                        @endforeach
                         @endforeach
                     </select>
                         </p>
-                    <cite>描述：<input type="text" id="cla_intro" name="cla_intro"/></cite>
-                    <input type="hidden" id="id" name="id" value=""/>
                 </div>
 
             </div>
