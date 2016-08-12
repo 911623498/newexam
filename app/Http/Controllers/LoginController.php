@@ -91,7 +91,6 @@ class LoginController extends Controller
             '录入成绩'=>'grade/record',
             '每日成才率'=>'yield/index',
             '周考成才率'=>'yield/zk'
-
         ];
 
     }
