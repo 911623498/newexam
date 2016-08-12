@@ -29,10 +29,90 @@ class CollegeController extends CommonController
             $users = DB::table('man_class')->where('cla_pid', '!=',0)->paginate(5);
             $list = DB::table('man_class')->where('cla_pid', '!=',0)->get();
             $xy=DB::table('man_class')->where('cla_pid','0')->get();
+			//print_r($xy);die;
+				//$arr=array();
+				//print_r($arr);die;
+			foreach($xy as $k=>$v){
+				$arr=DB::table('man_class')->where('cla_pid',$v['cla_id'])->get();
+				if(!empty($arr)){
+					$jd[]=$arr;
+				}
+			}
+			foreach($jd as $k=>$v){
+				foreach($jd[$k] as $kk=>$vv){
+					foreach($users as $kkk=>$vvv){
+						//print_r($jd[$k][$kk]['cla_name']);
+						if($jd[$k][$kk]['cla_name']==$users[$kkk]['cla_name']){
+							unset($users[$kkk]);//删除$a数组同值元素
+						}
+							//print_r($users[$kkk]['cla_name']);
+					}
+				}
+			}
+			//print_r($jd);die;
+			//print_r($users);die;
         }else{
-            $users = DB::table('man_class')->where('cla_pid', '=',$se['cla_id'])->paginate(5);
+			$list=DB::table('man_class')->where('cla_pid', '=',$se['cla_id'])->get();
+			$str="";
+			$ids = "";
+			foreach($list as $k=>$v){
+				//$str.="orwhere('cla_id','=',".$v['cla_id'].")->";
+				$ids .= ','.$v['cla_id'];
+			}
+			//$pid = trim($ids,',');
+			
+			$pid = trim($ids,',');
+			$new_pid = explode(',',$pid);
+			foreach($new_pid as $k=>$v){
+				$res[] = DB::table('man_class')->where(['cla_pid'=>$v])->paginate(5);
+			}
+//print_r($res);die;
+			$users = "";
+			for($i=0;$i<count($res);$i++){
+				for($j=0;$j<count($res[$i]);$j++){
+					$users[] = $res[$i][$j];
+				}
+			}
+			//print_r($users);die;
+			//echo $str;die;
+			//print_r($list);die;
+			//$strs=rtrim($str,'->');
+			//echo $strs;die;
+			//$user=DB::table("man_class")->select("select * from man_class where cla_id=2")->paginate(5);
+			//print_r($user);die;
+            //$users = DB::table('man_class')->where('cla_pid', '=',$se['cla_id'])-> $strs->paginate(5);
+			//print_r($users);die;
+			$data=DB::table('man_class')->where('cla_pid', '=',2)->lists('cla_id');
+			//print_r($data);die;
+			$users=DB::table('man_class')
+            ->whereIn('cla_pid',$data)
+            ->paginate(5);
+			//print_r($page);die;
+
+
+			//$data=DB::select("SELECT * FROM `man_class` WHERE cla_pid in (SELECT cla_id FROM `man_class` WHERE cla_pid=2)")->paginate(5);
+			//print_r($data);die;
             $list = DB::table('man_class')->where('cla_pid', '=',$se['cla_id'])->get();
             $xy=DB::table('man_class')->where('cla_id',$se['cla_id'])->get();
+			foreach($xy as $k=>$v){
+				$arr=DB::table('man_class')->where('cla_pid',$v['cla_id'])->get();
+				if(!empty($arr)){
+					$jd[]=$arr;
+				}
+			}
+			//print_r($users);
+			//print_r($jd);die;
+			foreach($jd as $k=>$v){
+				foreach($jd[$k] as $kk=>$vv){
+					foreach($users as $kkk=>$vvv){
+						//print_r($jd[$k][$kk]['cla_name']);
+						if($jd[$k][$kk]['cla_name']==$users[$kkk]['cla_name']){
+							unset($users[$kkk]);//删除$a数组同值元素
+						}
+							//print_r($users[$kkk]['cla_name']);
+					}
+				}
+			}
         }
         ///var_dump($users);die;
         //var_dump($users->items->items);die;
@@ -47,7 +127,7 @@ class CollegeController extends CommonController
        //print_r($users);die;
 //        $arr=$users['items'];
 //        var_dump($arr);die;
-        $count=count($list);
+       
 //        for($i=0;$i<$count;$i++){
 //            $users[$i]['url'] = 'aaaa';
 //            //$users[$i].=array_push($users,'xy');
@@ -57,7 +137,7 @@ class CollegeController extends CommonController
 //            $users['xy']=DB::table('man_class')->where('cla_id',$v['cla_pid'])->get();
 //        }
 //        print_r($users);die;
-        return view('college.classlist',['users'=>$users,'count'=>$count,'xy'=>$xy]);
+        return view('college.classlist',['users'=>$users,'xy'=>$xy,'jd'=>$jd]);
     }
     /*
      * 添加学院
@@ -83,15 +163,16 @@ class CollegeController extends CommonController
                     ['cla_name' =>"$name", 'cla_intro' => "$info"]
                 );
                 if($id){
+					$userId = $this->generate_username(6);
                     $id = DB::table('man_user')->insertGetId(
-                        array('use_name' => "$name", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
+                        array('use_name' => "$userId", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
                     );
                     $users = DB::table('man_role')->where('role_name', "教务")->first();
                     if($users){
                          DB::table('man_user_role')->insertGetId(
                             array('use_id' => "$id", 'role_id' => $users['role_id'])
                         );
-                            echo "<script>alert('添加成功！');location.href='college'</script>";
+                            echo "<script>alert('账号为：".$userId.",密码为：123');location.href='college'</script>";
                     }else{
                         echo "<script>alert('没有相关角色，请先添加角色！');location.href='college'</script>";die;
                     }
@@ -128,8 +209,8 @@ class CollegeController extends CommonController
         $user = DB::table('man_class')->where('cla_id', "$id")->first();
         $re=DB::table('man_class')->where('cla_id',"$id")->delete();
         if($re){
-            $users = DB::table('man_user')->where('use_name', $user['cla_name'])->first();
-            $re=DB::table('man_user')->where('use_name',$user['cla_name'])->delete();
+            $users = DB::table('man_user')->where('cla_id', $user['cla_id'])->first();
+            $re=DB::table('man_user')->where('cla_id',$user['cla_id'])->delete();
             if($re){
                 DB::table('man_user_role')->where('use_id', $users['use_id'])->first();
                 $re=DB::table('man_user_role')->where('use_id',$users['use_id'])->delete();
@@ -152,11 +233,14 @@ class CollegeController extends CommonController
         $name=$_POST['cla_name'];
         $xy=$_POST['cla_pid'];
         $info=$_POST['cla_intro'];
+		$cla_tea=$_POST['cla_tea'];
+        $cla_mph=$_POST['cla_mph'];
+		//print_r($_POST);die;
         $user = DB::table('man_class')->where('cla_name', "$name")->first();
         if($id){
             $re=DB::table('man_class')
                 ->where('cla_id', "$id")
-                ->update( ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_pid'=>"$xy"]);
+                ->update( ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_tea'=>"$cla_tea",'cla_mph'=>"$cla_mph",'cla_pid'=>"$xy"]);
             if($re){
                 echo "<script>alert('修改成功');location.href='classes'</script>";
             }else{
@@ -165,19 +249,19 @@ class CollegeController extends CommonController
             }
         }else{
             $id = DB::table('man_class')->insertGetId(
-                ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_pid'=>"$xy"]
+                ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_tea'=>"$cla_tea",'cla_mph'=>"$cla_mph",'cla_pid'=>"$xy"]
             );
             if($id){
-
+				$userId = $this->generate_username(6);
                 $id = DB::table('man_user')->insertGetId(
-                    array('use_name' => "$name", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
+                    array('use_name' => "$userId", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
                 );
                 $users = DB::table('man_role')->where('role_name', "讲师")->first();
                 if($users){
                     DB::table('man_user_role')->insertGetId(
                         array('use_id' => "$id", 'role_id' => $users['role_id'])
                     );
-                    echo "<script>alert('添加成功！');location.href='classes'</script>";
+                    echo "<script>alert('账号为：".$userId.",密码为：123');location.href='classes'</script>";
                 }else{
                     echo "<script>alert('没有相关角色，请先添加角色！');location.href='classes'</script>";die;
                 }
@@ -209,5 +293,83 @@ public function pkclass(){
     }else{
         echo "0";
     }
+}  
+public function jdes(){
+	$se=$_SESSION['user'];
+	//print_r($se);die;
+        if($se['cla_id']==0){
+			return redirect('index/right');die;
+		}else{
+			 $user = DB::table('man_class')->where('cla_pid', $se['cla_id'])->paginate(5);
+			$xy=$se['use_names'];
+		}
+		 return view('college.jdlist',['users'=>$user,'xy'=>$xy]);
 }
+public function jdadd(){
+	$se=$_SESSION['user'];
+	$pid=$se['cla_id'];
+	 $id=$_POST['id'];
+        $name=$_POST['cla_name'];
+        $info=$_POST['cla_intro'];
+        $user = DB::table('man_class')->where('cla_name', "$name")->first();
+        if($id){
+                $re=DB::table('man_class')
+                    ->where('cla_id', "$id")
+                    ->update( ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_pid'=>"$pid"]);
+                if($re){
+                    echo "<script>alert('修改成功');location.href='college'</script>";
+                }else{
+                    echo "<script>alert('修改失败');</script>";
+
+                }
+            }else{
+                $id = DB::table('man_class')->insertGetId(
+                    ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_pid'=>"$pid"]
+                );
+                if($id){
+					$userId = $this->generate_username(6);
+                    $id = DB::table('man_user')->insertGetId(
+                        array('use_name' => "$userId", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
+                    );
+                    $users = DB::table('man_role')->where('role_name', "系主任")->first();
+                    if($users){
+                         DB::table('man_user_role')->insertGetId(
+                            array('use_id' => "$id", 'role_id' => $users['role_id'])
+                        );
+                            echo "<script>alert('账号为：".$userId.",密码为：123');location.href='college'</script>";
+                    }else{
+                        echo "<script>alert('没有相关角色，请先添加角色！');location.href='college'</script>";die;
+                    }
+                }else{
+                    echo "<script>alert('添加失败');location.href='college'</script>";die;
+
+                }
+         }
+}
+
+
+
+
+
+ function create_password($pw_length = 4){
+            $randpwd = '';
+            for ($i = 0; $i < $pw_length; $i++){
+                $randpwd .= chr(mt_rand(33, 126));
+            }
+            return $randpwd;
+        }
+    public    function generate_username( $length = 6 ) {
+            // 密码字符集，可任意添加你需要的字符
+            $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            $password = '';
+            for ( $i = 0; $i < $length; $i++ )
+            {
+                // 这里提供两种字符获取方式
+                // 第一种是使用substr 截取$chars中的任意一位字符；
+                // 第二种是取字符数组$chars 的任意元素
+                // $password .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+                $password .= $chars[ mt_rand(0, strlen($chars) - 1) ];
+            }
+            return $password;
+        }
 }
