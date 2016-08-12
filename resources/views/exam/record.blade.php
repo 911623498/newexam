@@ -96,10 +96,18 @@
                         {
                         ?>
                         <input  type="radio" checked="checked" id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="3"/>月考
-                        <?php }else{?>
+                        <?php }elseif($vv['date_status']==1){?>
                         <input  type="radio" checked="checked" id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="1"/>日考
                         <input  type="radio" id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="2"/>周考
                         <input  type="radio" id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="0"/>无考试
+                        <?php }elseif($vv['date_status']==2){?>
+                            <input  type="radio"  id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="1"/>日考
+                            <input  type="radio" checked="checked" id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="2"/>周考
+                            <input  type="radio" id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="0"/>无考试
+                        <?php }else{?>
+                            <input  type="radio"  id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="1"/>日考
+                            <input  type="radio"  id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="2"/>周考
+                            <input  type="radio" checked="checked" id="date_status_<?php echo $vv['date_id'];?>" name="date_status[<?php echo $vv['date_id']; ?>]" value="0"/>无考试
                         <?php }?>
                     </td>
                 </tr>
@@ -111,12 +119,28 @@
             </form>
         </div>
     </div>
+    <div class="tip">
+        <div class="tiptop"><span>提示信息</span><a></a></div>
+
+        <div class="tipinfo">
+            <span><img src="{{URL::asset('')}}images/ticon.png" /></span>
+            <div class="tipright">
+                <p>考试周期录入会清空上次所录入信息，是否确定? </p>
+                <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+            </div>
+        </div>
+        <div class="tipbtn">
+            <input name="" type="button"  class="sure" value="确定" />&nbsp;
+            <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+    </div>
     <script>
         $(function () {
             $("#txtBeginDate").calendar({});
             $("#txtEndDate").calendar({});
         });
-        function save(){
+        $(".sure").click(function(){
+            $(".tip").fadeOut(100);
             var start_date=$("#txtBeginDate").val();
             var end_date=$("#txtEndDate").val();
             var url="{{URL('exam/save')}}";
@@ -130,49 +154,41 @@
             }else{
                 var data={"start_date":start_date,"end_date":end_date};
                 $.get(url,data,function(msg){
-                    alert(msg)
+                    //alert(msg)
                     if(msg==1)
                     {
                         location.href="{{URL('exam/type_list')}}?start_date="+start_date+'&end_date='+end_date;
-                    }else
+                    }else if(msg==2)
                     {
                         alert("考试周期录入必须大于等于21天")
+                    }else
+                    {
+                        alert("考试周期尚未结束，你不能进行录入")
                     }
                 })
             }
+        });
+        $(".cancel").click(function(){
+            $(".tip").fadeOut(100);
+        });
+        $(".tiptop a").click(function(){
+            $(".tip").fadeOut(200);
+        });
+        function save(){
+            var start_date=$("#txtBeginDate").val();
+            var end_date=$("#txtEndDate").val();
+            if(start_date=="")
+            {
+                alert("你必须选择开始日期")
+            }else if(end_date=="")
+            {
+                alert("你必须选择结束日期")
+
+            }else
+            {
+                $(".tip").fadeIn(100);
+            }
         }
-        {{--function confirm()--}}
-        {{--{--}}
-            {{--var zt = document.getElementsByName("zt[]");--}}
-            {{--var val=$('input:radio[name="date_status[1]"]:checked').val();--}}
-{{--//            alert(val);--}}
-            {{--var date_status=document.getElementsByName("date_status[]");--}}
-           {{--// alert(date_status)--}}
-            {{--var num=zt.length;--}}
-            {{--//alert(zt)--}}
-            {{--var nums=date_status.length;--}}
-            {{--var arr="";--}}
-            {{--for(var i=0;i<num;i++)--}}
-            {{--{--}}
-{{--//                alert(i)--}}
-                {{--var nums=parseInt(i)+parseInt(1);--}}
-{{--//                alert(nums)--}}
-                {{--var val=$('input:radio[name="date_status['+nums+']"]:checked').val();--}}
-                {{--//alert(val);--}}
-                {{--if(zt[i].checked)--}}
-                {{--{--}}
-                    {{--var zt_id=zt[i].value;--}}
-                    {{--//alert(zt_id)--}}
-                    {{--var  ids=zt_id+'+'+val+',';--}}
-                   {{--arr=arr+ids;--}}
-                {{--}--}}
-            {{--}--}}
-            {{--var url="{{URL('exam/exam_status')}}";--}}
-            {{--var data={"arr":arr};--}}
-            {{--$.get(url,data,function(msg){--}}
-                {{--alert(msg)--}}
-            {{--});--}}
-        {{--}--}}
     </script>
     <script type="text/javascript">
         $("#usual1 ul").idTabs();
