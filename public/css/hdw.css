@@ -1,0 +1,11 @@
+/* CSS Document */
+* { padding:0; margin:0;}
+body { font-size:12px; padding:100px; position:relative; }
+select { width:100px; height:167px; padding:5px;}
+.content { float:left; text-align:center; margin-right:10px; }
+span { display:block; width:100px; height:30px; background:#06C; cursor:pointer; border:1px solid #ccc; line-height:30px; margin:5px 0 0 80px;}
+
+.big-div{ margin:0 auto; position:absolute; left:50%; top:50%; margin-left:-250px; }
+#select1,#select2{ width:250px; height:300px;}
+option{ width:80px; height:30px; margin:0 auto;}
+.but{background:#06C; width:160px; height:30px; position:absolute; left:180px; top:102%; text-align:center; line-height:30px;}

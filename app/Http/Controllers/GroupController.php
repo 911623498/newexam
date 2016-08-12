@@ -5,21 +5,24 @@ use DB;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+require_once (__DIR__."/../../../vendor/PHPExcel.php");
 use Illuminate\Support\Facades\Input;
-class GroupController extends CommonController
+
+class GroupController extends Controller
 {
+
     /**
      * 学生信息列表
      */
      public function allot()
     {
-        $cla_id = $_SESSION['user']['cla_id'];
+//        $cla_id = $_SESSION['user']['cla_id'];
+         $cla_id=9;
         //PK 小组
         $pk="select * from man_pk_group INNER JOIN man_student on man_pk_group.stu_group=man_student.stu_id where man_pk_group.cla_id = '$cla_id'";
         $pk=DB::select($pk);
         $pk1=DB::select("select * from man_pk_group INNER JOIN man_student on man_pk_group.pk_group=man_student.stu_id where man_pk_group.cla_id = '$cla_id'");
         //未PK组
-
         //print_r($pk1);die;
         $person=DB::select("select * from man_pk_group INNER JOIN man_student on man_pk_group.stu_group=man_student.stu_id where man_pk_group.cla_id = '$cla_id' and pk_group=''");
          $su=count($person);
@@ -54,7 +57,6 @@ class GroupController extends CommonController
         $k_zu = DB::select("select stu_group from man_student where  cla_id='$cla_id'");
 //        print_r($k_zu);die;
         if (empty($k_zu)) {
-
             //验证姓名的唯一
             $name = DB::select("select stu_name from man_student where  cla_id='$cla_id'");
             //小组成员
@@ -65,7 +67,6 @@ class GroupController extends CommonController
             //本组成员
             $zu_y_name = substr($stu_name, $a + 1);
             $new_name = explode(',', $zu_y_name);
-
             //学号
             $stu_care = $_POST['stu_care'];
             $a = strpos($stu_care, ',');
@@ -415,12 +416,16 @@ class GroupController extends CommonController
     {
 
 
-        $cla_id=$_SESSION['user']['cla_id'];
+       // $cla_id=$_SESSION['user']['cla_id'];
+        $cla_id = 9;
 
 
-        $user_list = DB::table('man_student')->where('cla_id',$cla_id)->paginate(5);
+        $user_list = DB::table('man_student')->where('cla_id',$cla_id)->orderBy('stu_id','desc')->paginate(5);
 //        print_r($user_list);
-        return view('group/group_list',['user_list'=>$user_list]);
+
+            return view('group/group_list',['user_list'=>$user_list]);
+
+
     }
     /**
      * 小组PK
@@ -579,6 +584,178 @@ class GroupController extends CommonController
         }else{
             echo 0;
         }
+
+    }
+
+
+    /**
+     * 导入
+     */
+    public function daoru(Request $request){
+//        $cla_id = $_SESSION['user']['cla_id'];
+        $cla_id=9;
+        $PHPExcel = new \PHPExcel();
+        //这里是导入excel2007 的xlsx格式，如果是2003格式可以把“excel2007”换成“Excel5"
+        //怎么样区分用户上传的格式是2003还是2007呢？可以获取后缀  例如：xls的都是2003格式的
+        //xlsx 的是2007格式的  一般情况下是这样的
+        if(!empty($_FILES['student_list']['name'])){
+            $file_types = explode(".",$_FILES['student_list']['name']);
+            $file_type = $file_types[count($file_types)-1];
+        }
+        if( $file_type =='xlsx' )
+        {
+            $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
+
+        }
+        else
+        {
+            $objReader = \PHPExcel_IOFactory::createReader('Excel5');
+        }
+        //导入的excel路径
+        $excelpath=$_FILES['student_list']['tmp_name'];
+        if(empty($excelpath)){
+            echo "<script>alert('请选择上传的文件！');location.href='group_list'</script>";
+        }
+        @$objPHPExcel=$objReader->load($excelpath);
+        if($objPHPExcel){
+            $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
+            //导入的excel路径
+            $excelpath=$_FILES['student_list']['tmp_name'];
+            $objPHPExcel=$objReader->load($excelpath);
+        }
+        $sheet=$objPHPExcel->getSheet(0);
+        //取得总行数
+        $highestRow=$sheet->getHighestRow();
+        //取得总列数
+        $highestColumn=$sheet->getHighestColumn();
+        //从第二行开始读取数据  因为第一行是表格的表头信息
+        $sql = "";
+        for($j=2;$j<=$highestRow;$j++) {
+            $str = "";
+            //从A列读取数据
+            for ($k='B'; $k <= $highestColumn; $k++) {
+                $str .= $objPHPExcel->getActiveSheet()->getCell("$k$j")->getValue() . '|*|';//读取单元格
+            }
+            $str = mb_convert_encoding($str, 'utf8', 'auto');//根据自己编码修改
+            $strs = explode("|*|", $str);
+            //拼写sql语句
+            $sql[] = [
+                'stu_name' => "{$strs[0]}",
+                'cla_id' =>  $cla_id,
+                'stu_care' => "{$strs[1]}",
+                'course' => "{$strs[3]}",
+                're_next' => "{$strs[2]}"
+
+            ];
+        }
+//       print_r($sql);die;
+            for($i=0;$i<count($sql);$i++){
+                $re=DB::table('man_student')->insert(array(
+                    array('stu_name' => $sql[$i]['stu_name'],'cla_id' =>$sql[$i]['cla_id'],'stu_care' =>$sql[$i]['stu_care'],'course' =>$sql[$i]['course'],'re_next' =>$sql[$i]['re_next']),
+                ));
+            }
+        if($re){
+            $time=date("Y-m-d H:i:s",time());
+            $iipp=$_SERVER["REMOTE_ADDR"];
+            for($i=0;$i<count($sql);$i++){
+                $res=DB::table('man_user')->insert(array(
+                    array('use_name' => $sql[$i]['stu_care'],'use_pwd' =>123,'use_time' =>$time,'use_ip' =>$iipp,'use_names' =>$sql[$i]['stu_name'],'cla_id' => $sql[$i]['cla_id']),
+                ));
+            }
+            if($res){
+                $count=count($sql);
+                $sql="select use_id from man_user ORDER BY use_id DESC limit $count";
+                $use_id=DB::select($sql);
+                foreach($use_id as $k => $v){
+                    foreach($v as $kk=>$vv){
+                        $a[]=$vv;
+                    }
+                }
+//                print_r($a);die;
+                for($i=0;$i<count($a);$i++){
+                    $ress=DB::table('man_user_role')->insert(array(
+                        array('use_id' =>$a[$i],'role_id' =>5),
+                    ));
+                }
+                if($ress){
+                    echo "<script>alert('导入成功');location.href='group_list'</script>";
+                }else{
+                    echo "<script>alert('导入失败');location.href='group_list'</script>";
+                }
+            }
+        }
+
+
+
+    }
+
+
+    /**
+     * 分配小组显示页面
+     */
+    public function fp_group(){
+        $sql="select stu_id,stu_name from man_student where stu_group = 0 ";
+        $list=DB::select($sql);
+//        print_r($list);die;
+        return view('group/fp_group',['list'=>$list]);
+    }
+
+    /**
+     * 分配
+     */
+    public function fenpei(){
+        $id=$_POST['ss'];
+
+        $ss=strpos($id,',');
+
+        $zu_id=substr($id,0,$ss);
+        
+        $sql1="select stu_group from man_student ORDER BY stu_group DESC limit 1";
+        $res1=DB::select($sql1);
+//        print_r($res1);die;
+        $zu=$res1[0]['stu_group'];
+        $new_stu_group=$zu+1;
+        // 1.首先修改小组
+        if($res1){
+            $sql2="update man_student set stu_group = $new_stu_group where stu_id in ($id)";
+            $res2=DB::update($sql2);
+            if($res2){
+                $sql3="update man_student set stu_pid = 1 where stu_id = $zu_id";
+
+                $res3=DB::update($sql3);
+                if($res3){
+                    $sql4="select stu_care from man_student where stu_id = $zu_id";
+                    $res4=DB::select($sql4);
+                    foreach($res4 as $k=>$v){
+                        foreach($v as $kk=>$vv){
+                            $stu_care = $vv;
+                        }
+                    }
+                    $sql5="select use_id from man_user where use_name = $stu_care";
+                    $res5=DB::select($sql5);
+                    foreach($res5 as $k=>$v){
+                        foreach($v as $kk=>$vv){
+                            $use_id = $vv;
+                        }
+                    }
+                    $sql5="update man_user_role set role_id = 3 where use_id = $use_id";
+                    $res5=DB::update($sql5);
+                    if($res5){
+                        echo 1;
+                    }else{
+                        echo 5;
+                    }
+                }else{
+                    echo 4;
+                }
+            }else{
+                echo 3;
+            }
+        }else{
+            echo 2;
+        }
+
+
 
     }
 }
