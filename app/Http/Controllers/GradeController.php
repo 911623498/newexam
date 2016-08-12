@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 use PHPExcel;
-class GradeController extends CommonController
+class GradeController extends Controller
 {
 
     /**
@@ -194,16 +194,15 @@ class GradeController extends CommonController
      */
     public function look()
     {
-
+        session_start();
         @$role_id = $_SESSION['user']['role_id'];  //登录用户的角色
         @$cla_id = $_SESSION['user']['cla_id'];  //登录用户的学院（班级）
-
         switch ($role_id){
             case 1 :
-                //教务 查询这是哪个学院的教务 根据学院查询所有班级
+                //教务 （学院）查询这是哪个学院的教务 根据学院查询  系
                 $res = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
-                $cla_pid = $res[0]['cla_id'];
-                $cla_name = $res[0]['cla_name'];
+                $cla_pid = $res[0]['cla_id']; //学院ID
+                $cla_name = $res[0]['cla_name']; //学院名称
                 $data['cla_name'] = $cla_name;
                 $data['data'] = DB::table('man_class')->where(["cla_pid" => $cla_pid])->paginate(5);
                 $data['role_id'] = $role_id;
@@ -244,15 +243,46 @@ class GradeController extends CommonController
                 for($i=0;$i<$sum_cla;$i++){
                     for($j=1;$j<=20;$j++){
                         $data['cla_class'][$i][$j] = explode(',',$data['cla_class'][$i][$j]);
+                        foreach($data['cla_class'][$i][$j] as $k=>$v){
+                            if($v<90)
+                            {
+                                #8b0000
+                                $data['cla_class'][$i][$j][$k] = str_replace($data['cla_class'][$i][$j][$k],$data['cla_class'][$i][$j][$k],"<font color='gray'>".$data['cla_class'][$i][$j][$k]."</font>");
+                            }
+                            if($v=="")
+                            {
+                                $data['cla_class'][$i][$j][$k] = str_replace($data['cla_class'][$i][$j][$k],$data['cla_class'][$i][$j][$k],"");
+                            }
+                        }
                     }
                     $data['cla_class'][$i]['yuekao'] = explode(',',$data['cla_class'][$i]['yuekao']);
+                    foreach($data['cla_class'][$i]['yuekao'] as $k=>$v){
+                        if($v<90)
+                        {
+                            $data['cla_class'][$i]['yuekao'][$k] = str_replace($data['cla_class'][$i]['yuekao'][$k],$data['cla_class'][$i]['yuekao'][$k],"<font color='gray'>".$data['cla_class'][$i]['yuekao'][$k]."</font>");
+                        }
+                        if($v=="")
+                        {
+                            $data['cla_class'][$i]['yuekao'][$k] = str_replace($data['cla_class'][$i]['yuekao'][$k],$data['cla_class'][$i]['yuekao'][$k],"");
+                        }
+                    }
                 }
-
 
                 //pk班级分数
                 for($i=0;$i<$sum_pk;$i++){
                     for($j=1;$j<=20;$j++){
                         $data['pk_class'][$i][$j] = explode(',',$data['pk_class'][$i][$j]);
+                        foreach($data['pk_class'][$i][$j] as $k=>$v){
+                            if($v<90)
+                            {
+                                #8b0000
+                                $data['pk_class'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['pk_class'][$i][$j][$k],"<font color='gray'>".$data['pk_class'][$i][$j][$k]."</font>");
+                            }
+                            if($v=="")
+                            {
+                                $data['pk_class'][$i][$j][$k] = str_replace($data['pk_class'][$i][$j][$k],$data['pk_class'][$i][$j][$k],"");
+                            }
+                        }
                     }
                     $data['pk_class'][$i]['yuekao'] = explode(',',$data['pk_class'][$i]['yuekao']);
                 }
@@ -279,8 +309,29 @@ class GradeController extends CommonController
                 for($i=0;$i<$sum_cla;$i++){
                     for($j=1;$j<=20;$j++){
                         $data['data'][$i][$j] = explode(',',$data['data'][$i][$j]);
+                        foreach($data['data'][$i][$j] as $k=>$v){
+                            if($v<90)
+                            {
+                                #8b0000
+                                $data['data'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['data'][$i][$j][$k],"<font color='gray'>".$data['data'][$i][$j][$k]."</font>");
+                            }
+                            if($v=="")
+                            {
+                                $data['data'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['data'][$i][$j][$k],"");
+                            }
+                        }
                     }
                     $data['data'][$i]['yuekao'] = explode(',',$data['data'][$i]['yuekao']);
+                    foreach($data['data'][$i]['yuekao'] as $k=>$v){
+                        if($v<90)
+                        {
+                            $data['data'][$i]['yuekao'][$k] = str_replace($data['data'][$i]['yuekao'][$k],$data['data'][$i]['yuekao'][$k],"<font color='gray'>".$data['data'][$i]['yuekao'][$k]."</font>");
+                        }
+                        if($v=="")
+                        {
+                            $data['data'][$i]['yuekao'][$k] = str_replace($data['data'][$i]['yuekao'][$k],$data['data'][$i]['yuekao'][$k],"");
+                        }
+                    }
                 }
                 return view('grade.zzlook',$data);
                 break;
@@ -303,10 +354,44 @@ class GradeController extends CommonController
                 for($i=0;$i<$sum_cla;$i++){
                     for($j=1;$j<=20;$j++){
                         $data['data'][$i][$j] = explode(',',$data['data'][$i][$j]);
+                        foreach($data['data'][$i][$j] as $k=>$v){
+                            if($v<90)
+                            {
+                                #8b0000
+                                $data['data'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['data'][$i][$j][$k],"<font color='gray'>".$data['data'][$i][$j][$k]."</font>");
+                            }
+                            if($v=="")
+                            {
+                                $data['data'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['data'][$i][$j][$k],"");
+                            }
+                        }
                     }
                     $data['data'][$i]['yuekao'] = explode(',',$data['data'][$i]['yuekao']);
+                    foreach($data['data'][$i]['yuekao'] as $k=>$v){
+                        if($v<90)
+                        {
+                            $data['data'][$i]['yuekao'][$k] = str_replace($data['data'][$i]['yuekao'][$k],$data['data'][$i]['yuekao'][$k],"<font color='gray'>".$data['data'][$i]['yuekao'][$k]."</font>");
+                        }
+                        if($v=="")
+                        {
+                            $data['data'][$i]['yuekao'][$k] = str_replace($data['data'][$i]['yuekao'][$k],$data['data'][$i]['yuekao'][$k],"");
+                        }
+                    }
                 }
                 return view('grade.zzlook',$data);
+                break;
+            case 7 :
+                //系主任
+                $re = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
+                $cla_name = $re[0]['cla_name']; //系名称
+
+                $res = DB::table('man_class')->where(["cla_pid" => $cla_id])->paginate(5);
+                $data['cla_name'] = $cla_name;
+
+                $data['data'] = $res;
+                $data['cla_id'] = $cla_id ;
+
+                return view('grade.xiclass',$data);
                 break;
             default :
                 return redirect('index/right');
@@ -330,7 +415,6 @@ class GradeController extends CommonController
             }
         }
         $data['table'] = $date;
-//print_r($data['table']);die;
         $cla_id = $request->input('id');  //查看班级的ID
         $re = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
         $cla_name = $re[0]['cla_name']; //本班级名称
@@ -341,11 +425,34 @@ class GradeController extends CommonController
         for($i=0;$i<$sum_cla;$i++){
             for($j=1;$j<=20;$j++){
                 $data['data'][$i][$j] = explode(',',$data['data'][$i][$j]);
+                foreach($data['data'][$i][$j] as $k=>$v){
+                    if($v<90)
+                    {
+                    #8b0000
+                        $data['data'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['data'][$i][$j][$k],"<font color='gray'>".$data['data'][$i][$j][$k]."</font>");
+                    }
+                    if($v=="")
+                    {
+                        $data['data'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['data'][$i][$j][$k],"");
+                    }
+                }
             }
             $data['data'][$i]['yuekao'] = explode(',',$data['data'][$i]['yuekao']);
+            foreach($data['data'][$i]['yuekao'] as $k=>$v){
+                if($v<90)
+                {
+                    $data['data'][$i]['yuekao'][$k] = str_replace($data['data'][$i]['yuekao'][$k],$data['data'][$i]['yuekao'][$k],"<font color='gray'>".$data['data'][$i]['yuekao'][$k]."</font>");
+                }
+                if($v=="")
+                {
+                    $data['data'][$i]['yuekao'][$k] = str_replace($data['data'][$i]['yuekao'][$k],$data['data'][$i]['yuekao'][$k],"");
+                }
+            }
         }
-//        print_r($data);die;
+
+        //print_r($data);
         return view('grade.classlook',$data);
+//        return view('grade.cjd',$data);
     }
 
 
@@ -362,6 +469,27 @@ class GradeController extends CommonController
         $cla_id = $request->input('cla_id');
         $re = DB::table('man_class')->where('cla_name','like','%'.$cla_name.'%')->where(['cla_pid'=>$cla_id])->get();
         echo json_encode($re);
+    }
+    public function sel_class1( request $request )
+    {
+        //接受查询班级名称
+        $cla_name = $request->input('key');
+
+        //学院ID
+        $cla_id = $request->input('cla_id');
+
+        $re = DB::table('man_class')->where(['cla_pid'=>$cla_id])->get();
+
+        $pid = "";
+        foreach($re as $k=>$v){
+            $pid .= ','.$v['cla_id'];
+        }
+
+        $pid = trim($pid,',');
+        $new_pid = explode(',',$pid);
+        $res = DB::table('man_class')->where('cla_name','like','%'.$cla_name.'%')->wherein('cla_pid',$new_pid)->get();
+
+        echo json_encode($res);
     }
 
 
@@ -561,5 +689,19 @@ class GradeController extends CommonController
         header('Content-Disposition:attachment;filename="'.date("Y-m-d")."-".$cla_name.'.xls"');
         header("Content-Transfer-Encoding:binary");
         $write->save('php://output');
+    }
+
+
+    /**
+     * 学院查看专业下班级
+     */
+    public function sel_classs( Request $request )
+    {
+        $cla_pid = $request->input('id');
+        $data['cla_id'] = $cla_pid;
+        $data['cla_name'] = $cla_pid = $request->input('cla_name');
+        $data['data'] = DB::table('man_class')->where(["cla_pid" => $data['cla_id']])->paginate(5);
+
+        return view('grade.selclass',$data);
     }
 }

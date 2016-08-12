@@ -12,7 +12,7 @@ class PrivilegeController extends CommonController
     public function user()
     {
         $class = DB::table('man_class')->select('cla_id','cla_name')->where(['cla_pid' => 0])->get();
-        $data=$users = DB::table('man_user')->join('man_class', 'man_user.cla_id', '=', 'man_class.cla_id')->paginate(10);
+        $data=$users = DB::table('man_user')->leftjoin('man_class', 'man_user.cla_id', '=', 'man_class.cla_id')->paginate(10);
         return view('privilege/user',['class'=>$class,'data'=>$data]);
     }
 
@@ -47,11 +47,10 @@ class PrivilegeController extends CommonController
         $data['use_name'] =$user_name;
         $data['use_pwd'] =$user_pwd;
         $data['use_names'] =$user_names;
-        $data['cla_id'] =$class_id;
 
         $user_id = DB::table('man_user')->insertGetId($data);
         if($user_id){
-            $re = DB::table('man_user_role')->insert(['use_id'=>$user_id,'role_id'=>1]);
+            $re = DB::table('man_user_role')->insert(['use_id'=>$user_id,'role_id'=>8]);
             if($re){
                return redirect('privilege/user');
             }

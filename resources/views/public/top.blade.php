@@ -46,8 +46,12 @@ $(function(){
     <div class="user">
     <span><?php echo $_SESSION['user']['use_names']?></span>
     <i>消息</i>
-    <b><?php echo $_SESSION['user']['sum']?></b>
-    </div>    
+        @if($_SESSION['user']['sum']==0)
+            <b>{{$_SESSION['user']['sum']}} </b>
+        @else
+            <a href="{{URL('index/news')}}" target="rightFrame"><b>{{$_SESSION['user']['sum']}}</b></a>
+        @endif
+    </div>
     
     </div>
 </body>
