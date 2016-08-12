@@ -21,21 +21,23 @@ class IndexController extends CommonController
 
         return view('index/index');
     }
+
+    /*右侧栏*/
     public function right(){
 
-        if($_SESSION['user']['use_id']!=1)
-        {
-            $arr=cz();
-        }else{
-            $_SESSION['user']['sum']=0;
-            $arr="";
-        }
-        return view('public/right',array('arr'=>$arr));
+        return view('public/right');
+
+    }
+
+    /*消息*/
+    public function news(){
+        $arr = cz();
+       return view('news',['arr'=>$arr]);
+    }
 
 }
-}
+
 function cz(){
-
     $role_id=$_SESSION['user']['role_id'];
     $cla_id=$_SESSION['user']['cla_id'];
     $user_names=$_SESSION['user']['use_names'];

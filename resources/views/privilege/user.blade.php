@@ -67,17 +67,6 @@
                 <li><label><b>*</b> 用户名</label><input name="use_name" type="text" class="dfinput"  value=""/></li>
                 <li><label><b>*</b> 密码</label><input name="use_pwd" type="password" class="dfinput" value=""  /></li>
                 <li><label><b>*</b> 姓名</label><input name="use_names" type="text" class="dfinput" value=""/></li>
-                <li><label><b>*</b> 学院</label>-
-                    <div class="vocation">
-                        <select class="select1" name="class_id">
-                            <option value="">请选择...</option>
-                            @foreach($class as $k=>$v)
-                            <option value="{{$v['cla_id']}}">{{$v['cla_name']}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <span id ='checkclass'></span>
-                </li>
                  <li><label>&nbsp;</label><input id = 'sbt' type="submit" class="scbtn" value="马上添加"/></li>
             </ul>
             </form>

@@ -1,3 +1,5 @@
+<!DOCTYPE HTML>
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Highcharts Example</title>
@@ -13,20 +15,16 @@
                     type: 'column'
                 },
                 title: {
-                    text: "<?php echo $b_name?>"
+                    text: '每日成才率'
                 },
                 subtitle: {
-                    text: 'Source: <a href="http://en.wikipedia.org/wiki/List_of_cities_proper_by_population">Wikipedia</a>'
+                    text: ''
                 },
                 xAxis: {
-                    type: 'category',
-                    labels: {
-                        rotation: -45,
-                        style: {
-                            fontSize: '13px',
-                            fontFamily: '日考'
-                        }
-                    }
+                    categories: [
+                        <?php echo $a_ks;?>
+                    ],
+                    crosshair: true
                 },
                 yAxis: {
                     min: 0,
@@ -34,37 +32,40 @@
                         text: '成才率(%)'
                     }
                 },
-                legend: {
-                    enabled: false
-                },
                 tooltip: {
-                    pointFormat: ' <b>{point.y:.1f}</b>'
+                    headerFormat: '<span style="font-size:10px">考试{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">班级{series.name}: </td>' +
+                    '<td style="padding:0"><b>{point.y:.1f} %</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
                 },
-                series: [{
-                    name: 'Population',
-                    data:  <?php echo $bs?>,
-                    dataLabels: {
-                        enabled: true,
-                        rotation: -90,
-                        color: '#FFFFFF',
-                        align: 'right',
-                        format: '{point.y:.1f}', // one decimal
-                        y: 10, // 10 pixels down from the top
-                        style: {
-                            fontSize: '13px',
-                            fontFamily: 'Verdana, sans-serif'
-                        }
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
                     }
-                }]
+                },
+                series: [
+                    <?php echo $str?>
+                ]
             });
         });
     </script>
 </head>
 <body>
-<script src="{{URL::asset('')}}js/highcharts.js"></script>
-<script src="{{URL::asset('')}}js/exporting.js"></script>
+<script src="{{URL::asset('')}}/js/highcharts.js"></script>
+<script src="{{URL::asset('')}}/js/exporting.js"></script>
 
-<div id="container" style="min-width: 300px; height: 400px; margin: 0 auto"></div>
-<input type="hidden" value="{{$bs}}" id="bs"/>
-<input type="hidden" value="<?php print_r($b_name)?>" id="bs_name"/>
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<?php
+if($role_id==7){
+?>
+<center><a href="{{URL("yield/yields")}}?cla_id={{$cla_id}}&role_id={{$role_id}}">查看</a></center>
+<center><a href="{{URL("yield/index")}}?cla_id={{$cla_id}}&role_id={{$role_id}}">返回</a></center>
+<?php
+}
+?>
+
 </body>
+</html>

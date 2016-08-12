@@ -25,28 +25,58 @@
             var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
             //return(localhostPaht+projectName);
 
-            flog=1;
+              var reg=/^\d\.([1-9]{1,2}|[0-9][1-9])$|^[1-9]\d{0,1}(\.\d{1,2}){0,1}$|^100(\.0{1,2}){0,1}$|^0{1}$/;
+
             var now_day= $("#select1  option:selected").val();
             var val= $(".grade");
-
-
+            flog=1;
+            flag=1;
                     for(var i=0;i<val.length;i++)
                     {
+//                            //var reg=/^1?[1-9]?\d([.]\d{1,2})?$|^1[0]{2}$/;
+//                            var reg=/^\d\.([1-9]{1,2}|[0-9][1-9])$|^[1-9]\d{0,1}(\.\d{1,2}){0,1}$|^100(\.0{1,2}){0,1}$|^0{1}$/;
+//                            var r=reg.test(val[i].value);
+//                            if(r==false)
+//                            {
+//                                flog=0;
+//
+                        inp= val[i].value;
 
+                        if(inp=="监考")
+                        {
+                            flog=1;
+                        }
+                        else if(inp=="请假")
+                        {
+                            flog=1;
+                        }
+                        else if(inp=="休学")
+                        {
+                            flog=1;
+                        }
+                        else if(inp=="作弊")
+                        {
+                            flog=1;
+                        }
+                        else if(reg.test(inp)==true)
+                        {
+                            flog=1;
+                        }
+                        else
+                        {
+                            flog=0;
+                        }
 
-
-                            //var reg=/^1?[1-9]?\d([.]\d{1,2})?$|^1[0]{2}$/;
-                            var reg=/^\d\.([1-9]{1,2}|[0-9][1-9])$|^[1-9]\d{0,1}(\.\d{1,2}){0,1}$|^100(\.0{1,2}){0,1}$|^0{1}$/;
-                            var r=reg.test(val[i].value);
-                            if(r==false)
-                            {
-                                flog=0;
-                            }
+                        if(flog==0)
+                        {
+                            flag=0;
+                        }
                     }
-            if(flog==0)
+            if(flag==0)
             {
-                $("#check").html("");
-                alert('请正确填入考试成绩！');
+
+                $("#check").html("<font color='red'>请正确填入考试成绩！</font>");
+               // alert('请正确填入考试成绩！');
             }
             else{
 
@@ -102,17 +132,31 @@
                    // alert(msg);
                     if(msg!='1')
                     {
-
                         $(".classlist").html(msg);
                     }
                     else
                     {
                         $(".grade").val("");
                     }
-
                 }
             });
         });
+
+        function showMsg(obj,id) {
+            var opt = obj.options[obj.selectedIndex];
+
+
+            $("input[name='"+id+"']").val(opt.text);
+
+            $("input[name='"+id+"']").text(opt.value);
+            if(opt.text=="正常")
+            {
+                $("input[name='"+id+"']").val("");
+            }
+            //alert("The option you select is:"+opt.text+"("+opt.value+")");
+
+
+        }
     </script>
 </head>
 <body>
@@ -162,10 +206,19 @@
             <span></span>
             <div class="lright">
                 <h2>姓名：{{$v['stu_name']}}</h2>
-                <p>学号：{{$v['stu_care']}}</p><br>
+                <p>学号：{{$v['stu_care']}}</p>
+               组员状态： <select name="" id="" onchange="showMsg(this,{{$v['stu_id']}})" style="width: 50px;height: 20px;border: solid  1px #000000;margin-top: 8px;">
+                    <option value="e" selected = "selected">正常</option>
+                    <option value="d">监考</option>
+                    <option value="a">请假</option>
+                    <option value="c">休学</option>
+                    <option value="b">作弊</option>
+                </select>
                 <input type="hidden" class="name" value="{{$v['stu_id']}}"/>
-                <p>理论：<input type="text" name="grad" class="grade" />分</p><br>
-                <p>机试：<input type="text"  name="grad" class="grade"/>分</p>
+                <div style="margin-top: 8px;">
+                <p>理论：<input type="text" name="{{$v['stu_id']}}" class="grade"  />分</p><br>
+                <p>机试：<input type="text"  name="{{$v['stu_id']}}" class="grade" />分</p>
+            </div>
             </div>
         </li>
             @endforeach
@@ -173,15 +226,9 @@
     <div class="clear"></div>
     <div class="pagin">
         <div class="message">共<i class="blue">{{$num1}}</i>个组员</div>
-        {{--<ul class="paginList">--}}
-            {{--<li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>--}}
-            {{--<li class="paginItem"><a href="javascript:;">1</a></li>--}}
-            {{--<li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>--}}
-        {{--</ul>--}}
     </div>
     <div class="tip">
         <div class="tiptop"><span>提示信息</span><a></a></div>
-
         <div class="tipinfo">
             <span><img src="{{URL::asset('')}}images/ticon.png" /></span>
             <div class="tipright">

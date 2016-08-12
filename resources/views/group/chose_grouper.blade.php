@@ -6,11 +6,8 @@
     <title></title>
     <link href="{{URL::asset('')}}css/style.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="{{URL::asset('')}}css/jquery.selectlist.css">
-
 </head>
-
 <body>
-
 <div class="place">
     <span>位置：</span>
     <ul class="placeul">
