@@ -24,7 +24,7 @@ class PrivilegeController extends CommonController
         $user_name = $request->input('use_name');
         $user_pwd = $request->input('use_pwd');
         $user_names = $request->input('use_names');
-
+        $role_id = $request->input('role_id');
         $preg = "/^\w{6,15}$/";
         if(!preg_match($preg,$user_name)){
             echo '用户名必须是6-15个字符';die;
@@ -37,6 +37,9 @@ class PrivilegeController extends CommonController
 //        if(!preg_match($preg2,$user_names)){
 //            echo '名字必须为2-6个字符';die;
 //        };
+        if(empty($role_id)){
+            echo '角色必须选择';die;
+        };
 
         $users = DB::table('man_user')->where(['use_name'=>$user_name])->get();
         if(!empty($users)){
@@ -48,7 +51,7 @@ class PrivilegeController extends CommonController
 
         $user_id = DB::table('man_user')->insertGetId($data);
         if($user_id){
-            $re = DB::table('man_user_role')->insert(['use_id'=>$user_id,'role_id'=>8]);
+            $re = DB::table('man_user_role')->insert(['use_id'=>$user_id,'role_id'=>$role_id]);
             if($re){
                return redirect('privilege/user');
             }
@@ -81,7 +84,6 @@ class PrivilegeController extends CommonController
                echo json_encode(['status'=>0,'error'=>'删除失败']);
            }
         }
-
     }
     /**
      * 初始化密码
@@ -104,7 +106,7 @@ class PrivilegeController extends CommonController
      */
     public function role()
     {
-        $data=$users = DB::table('man_role')->paginate(3);
+        $data=$users = DB::table('man_role')->paginate(10);
         return view('privilege.role', ['data'=>$data]);
     }
     /**
