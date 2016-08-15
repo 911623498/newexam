@@ -12,8 +12,7 @@ class YieldController extends CommonController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(){
-        $_SESSION['user']['role_id']=8;
-        $_SESSION['user']['cla_id']="";
+
         $role_id=$_SESSION['user']['role_id'];
         $cla_id=$_SESSION['user']['cla_id'];
         switch($role_id){
@@ -298,11 +297,13 @@ function yi($cla_id){
                 $arr[$k][$kk][]="";
                 $arr[$k][$kk][]="";
             }
+            error_reporting(0);
             if(($arr[$k][$kk][0]>=90&&$arr[$k][$kk][1]>=90)||($arr[$k][$kk][0]=='监考'&&$arr[$k][$kk][1]=='监考')){
                 $a_jg[$k]+=1;
             }
         }
     }
+    //print_r($arr);
     foreach($a_jg as $k=>$v){
         $a_jg[$k]=round(($v/$sum)*100,2);
     }

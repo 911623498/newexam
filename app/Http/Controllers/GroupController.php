@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 require_once (__DIR__."/../../../vendor/PHPExcel.php");
 use Illuminate\Support\Facades\Input;
 
-class GroupController extends Controller
+class GroupController extends CommonController
 {
 
     /**
@@ -16,8 +16,8 @@ class GroupController extends Controller
      */
      public function allot()
     {
-//        $cla_id = $_SESSION['user']['cla_id'];
-         $cla_id=9;
+      $cla_id = $_SESSION['user']['cla_id'];
+
         //PK 小组
         $pk="select * from man_pk_group INNER JOIN man_student on man_pk_group.stu_group=man_student.stu_id where man_pk_group.cla_id = '$cla_id'";
         $pk=DB::select($pk);
@@ -416,8 +416,8 @@ class GroupController extends Controller
     {
 
 
-       // $cla_id=$_SESSION['user']['cla_id'];
-        $cla_id = 9;
+       $cla_id=$_SESSION['user']['cla_id'];
+
 
 
         $user_list = DB::table('man_student')->where('cla_id',$cla_id)->orderBy('stu_id','desc')->paginate(5);
@@ -592,8 +592,8 @@ class GroupController extends Controller
      * 导入
      */
     public function daoru(Request $request){
-//        $cla_id = $_SESSION['user']['cla_id'];
-        $cla_id=9;
+     $cla_id = $_SESSION['user']['cla_id'];
+
         $PHPExcel = new \PHPExcel();
         //这里是导入excel2007 的xlsx格式，如果是2003格式可以把“excel2007”换成“Excel5"
         //怎么样区分用户上传的格式是2003还是2007呢？可以获取后缀  例如：xls的都是2003格式的
@@ -694,7 +694,8 @@ class GroupController extends Controller
      * 分配小组显示页面
      */
     public function fp_group(){
-        $sql="select stu_id,stu_name from man_student where stu_group = 0 ";
+        $cla_id = $_SESSION['user']['cla_id'];
+        $sql="select stu_id,stu_name from man_student where stu_group = 0 and cla_id=$cla_id ";
         $list=DB::select($sql);
 //        print_r($list);die;
         return view('group/fp_group',['list'=>$list]);

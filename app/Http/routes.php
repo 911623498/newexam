@@ -109,6 +109,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('group/fenpei','GroupController@fenpei'); //分配小组
 
 
+
+
     /** 成绩管理 */
     Route::any('grade/look','GradeController@look'); //查看成绩
     Route::any('grade/record','GradeController@record'); //录入成绩
