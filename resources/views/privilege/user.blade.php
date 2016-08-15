@@ -67,6 +67,15 @@
                 <li><label><b>*</b> 用户名</label><input name="use_name" type="text" class="dfinput"  value=""/></li>
                 <li><label><b>*</b> 密码</label><input name="use_pwd" type="password" class="dfinput" value=""  /></li>
                 <li><label><b>*</b> 姓名</label><input name="use_names" type="text" class="dfinput" value=""/></li>
+                <li><label><b>*</b> 角色</label>
+                    <div class="vocation">
+                        <select class="select1" name="role_id" >
+                            <option value="">---请选择---</option>
+                            <option value="8">校长</option>
+                            <option value="1">教务</option>
+                        </select>
+                    </div>
+                </li>
                  <li><label>&nbsp;</label><input id = 'sbt' type="submit" class="scbtn" value="马上添加"/></li>
             </ul>
             </form>
