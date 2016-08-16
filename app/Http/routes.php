@@ -106,7 +106,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('group/stu_del','GroupController@stu_del'); //学生信息删除
     Route::any('group/daoru','GroupController@daoru'); //学生信息导入
     Route::any('group/fp_group','GroupController@fp_group'); //分配小组
-    Route::any('group/fenpei','GroupController@fenpei'); //分配小组
+    Route::any('group/fenpei','GroupController@fenpei'); //学院小组
 
 
 

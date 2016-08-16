@@ -15,7 +15,7 @@
             <div class="lright">
                 <h2>姓名：{{$vv['stu_name']}}</h2>
                 <p>学号：{{$vv['stu_care']}}</p>
-                组员状态： <select name="" id="" onchange="showMsg(this,{{$vv['id']}})" style="width: 50px;height: 20px;border: solid  1px #000000;margin-top: 8px;">
+                组员状态： <select name="" class="select2" onchange="showMsg(this,{{$vv['id']}})" style="width: 50px;height: 20px;border: solid  1px #000000;margin-top: 8px;">
                     <option value="e">正常</option>
                     <option value="d" @if($vv['chengji'][0]=="监考")selected = "selected"@endif>监考</option>
                     <option value="a" @if($vv['chengji'][0]=="请假")selected = "selected"@endif>请假</option>
