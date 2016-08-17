@@ -72,6 +72,7 @@ $(document).ready(function(){
     <tr>
     <th width="100px;">班级名称</th>
     <th>所属学院</th>
+    <th>所属系</th>
     <th>所属阶段</th>
     <th>PK班级</th>
     <th>讲师</th>
@@ -94,11 +95,20 @@ $(document).ready(function(){
         {{$jd}}
 
     </td>
+        <td class="imgtd">@if($user['cla_jd'] ===0)
+   计算机基础
+@elseif ($user['cla_jd']===1)
+   专业
+@elseif ($user['cla_jd'] ===2)
+	高级
+	@else
+		没有信息
+@endif</td>
         <td class="imgtd">{{ $user['cla_pk'] }}</td>
         <td class="imgtd">{{ $user['cla_tea'] }}</td>
         <td class="imgtd">{{ $user['cla_mph'] }}</td>
-    <td><a href="#">{{ $user['cla_intro'] }}</a><p>发布时间：2013-10-12 09:25:18</p></td>
-    <td><a href="#" onclick="disp_prompt({{$user['cla_id']}})">选择PK班级</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="#" onclick="fun2({{$user['cla_id'] }})">修改</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="{{URL('college/cladel')}}?id={{$user['cla_id'] }}">删除</a><p>ID: {{$user['cla_id']}}</p></td>
+    <td><a href="#">{{ $user['cla_intro'] }}</a><p></p></td>
+    <td><a href="#" onclick="disp_prompt({{$user['cla_id']}})">选择PK班级</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="#" onclick="fun2({{$user['cla_id'] }})">修改</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="{{URL('college/classdel')}}?id={{$user['cla_id'] }}">删除</a><p>ID: {{$user['cla_id']}}</p></td>
     </tr>
     @endforeach
   
@@ -133,11 +143,12 @@ $(document).ready(function(){
 					<p>门牌号：<input type="text" id="cla_mph" name="cla_mph"/></p>
                     <p>课程：<input type="text" id="cla_intro" name="cla_intro"/></p>
                     <input type="hidden" id="id" name="id" value=""/>
-                    <p> 所属阶段：
-                    <select name="cla_pid" id="">
-                        @foreach ($xi as $user)
-                        <option value="{{$user['cla_id']}}">{{$user['cla_name']}}</option>
-                        @endforeach
+                    <input type="hidden" id="" name="cla_pid" value="{{$xi}}"/>
+                    <p> 所属阶段： {{$jd}}
+                    <select name="cla_xi" id="">
+                        <option value="0">专业基础
+                        <option value="1">专业阶段
+                        <option value="2">高级阶段
                     </select>
                         </p>
                 </div>
@@ -157,7 +168,7 @@ $(document).ready(function(){
         var token=$("#token").val();
         $.ajax({
             type: "POST",
-            url: "{{URL('college/cladel')}}",
+            url: "{{URL('college/classdel')}}",
             data: "id="+id+"&&_token="+token,
             success: function(msg){
               if(msg==0){
@@ -213,19 +224,21 @@ $(document).ready(function(){
                         alert("班级不存在,请重新输入");
                         $("#cla_name").val("");
                     }else if(msg==2){
-                        alert("请选择同一学院的班级！")
+                        alert("请选择同系的班级！")
                     }else if(msg==1){
                         alert("选择PK班级成功！")
-                        location.href="http://www.getinfo.com/bwexam/public/college/class";
+                        location.href="http://www.getinfo.com/newexam/public/college/classes";
                     }else if(msg==3){
-                        alert("选择错误！")
+                        alert("此班级已于别的班级进行PK，请重新选择！")
                     }else{
                         alert("错误！")
                     }
                 }
             });
 
-        }
+        }else{
+			
+		}
 
 
     }

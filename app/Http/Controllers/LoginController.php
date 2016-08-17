@@ -92,7 +92,7 @@ class LoginController extends Controller
             '录入成绩'=>'grade/record',
             '每日成才率'=>'yield/index',
 //            '周考成才率'=>'yield/zk',
-            '阶段列表'=>'college/jdes'
+            '系列表'=>'college/jdes'
 
 
         ];
