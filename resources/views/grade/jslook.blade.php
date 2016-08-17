@@ -1,6 +1,6 @@
 <?php error_reporting(0);?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>无标题文档</title>
@@ -61,7 +61,7 @@
                 {{--<li class="click" style="float: left">审核</li>--}}
             {{--</ul>--}}
         {{--</div>--}}
-                <div id="tab1" class="tabson">
+        <div id="tab1" class="tabson">
             <ul class="seachform">
                 <li>
                     <div style="margin-right: 0px;">
@@ -70,6 +70,15 @@
                     </div>
                 </li>
                 <li style="float: right"><label>&nbsp;</label><input name="" type="button" id='check' class="scbtn" value="查看未审核"/></li>
+                <div id="info1">
+                    <li style="float: right"><input name="" type="button"  value="成才率:"/>{{$arr1['chengcaikv']}}</li>
+                    <li style="float: right"><input name="" type="button"  value="出勤率:"/>{{$arr1['chuqin']}}</li>
+                    <li style="float: right"><input name="" type="button"  value="作弊人数:"/>{{$arr1['zuobi_ll']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="请假/休学人数:"/>{{$arr1['qingxiu']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="机试不及格人数:"/>{{$arr1['bujige_js']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="理论不及格人数:"/>{{$arr1['bujige_ll']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="班级人数:"/>{{$arr1['renshu']}}人</li>
+                </div>
             </ul>
             <table class="tablelist">
                 <?php $num=1?>
@@ -79,12 +88,11 @@
                     <th>姓名</th>
                     @foreach($table as $k=>$v)
                         @if($v['date_status']==1)
-                            <th>
-                                {{$v['stu_zduan']}}天</th>
+                            <th><a href="javascript:" onclick="click_day({{$v['stu_zduan']}})">{{$v['stu_zduan']}}天</a></th>
                         @elseif($v['date_status']==2)
-                            <th>周考{{$num++}}</th>
+                            <th><a href="javascript:" onclick="click_day({{$v['stu_zduan']}})">周考{{$num++}}</a></th>
                         @elseif($v['date_status']==3)
-                            <th>月考</th>
+                            <th><a href="javascript:" onclick='click_day("{{$v['stu_zduan']}}")'>月考</a></th>
                         @endif
                     @endforeach
                 </tr>
@@ -133,6 +141,16 @@
                         <span style="height: 30px;width: 50px;  float: right;font-size: 20px; color: blue" >理论</span>
                     </div>
                 </li>
+                {{--<li style="float: right"><label>&nbsp;</label><input name="" type="button" id='check' class="scbtn" value=""/></li>--}}
+                <div id="info2">
+                    <li style="float: right"><input name="" type="button"  value="成才率:"/>{{$arr2['chengcaikv']}}</li>
+                    <li style="float: right"><input name="" type="button"  value="出勤率:"/>{{$arr2['chuqin']}}</li>
+                    <li style="float: right"><input name="" type="button"  value="作弊人数:"/>{{$arr2['zuobi_ll']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="请假/休学人数:"/>{{$arr2['qingxiu']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="机试不及格人数:"/>{{$arr2['bujige_js']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="理论不及格人数:"/>{{$arr2['bujige_ll']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="班级人数:"/>{{$arr2['renshu']}}人</li>
+                </div>
             </ul>
             <table class="tablelist">
                 <thead>
@@ -141,12 +159,11 @@
                     <th>姓名</th>
                     @foreach($table as $k=>$v)
                         @if($v['date_status']==1)
-                            <th>
-                                {{$v['stu_zduan']}}天</th>
+                            <th><a href="javascript:" onclick="click_day1({{$v['stu_zduan']}})">{{$v['stu_zduan']}}天</a></th>
                         @elseif($v['date_status']==2)
-                            <th>周考{{$number++}}</th>
+                            <th><a href="javascript:" onclick="click_day1({{$v['stu_zduan']}})">周考{{$num++}}</a></th>
                         @elseif($v['date_status']==3)
-                            <th>月考</th>
+                            <th><a href="javascript:" onclick='click_day1("{{$v['stu_zduan']}}")'>月考</a></th>
                         @endif
                     @endforeach
                 </tr>
@@ -187,7 +204,8 @@
                 </tbody>
             </table>
         </div>
-
+        <input type="hidden" value="{{$cla_id}}" id="hid1"/>
+        <input type="hidden" value="{{$pkid}}" id="hid2"/>
     </div>
     <script type="text/javascript">
         $("#usual1 ul").idTabs();
@@ -232,8 +250,22 @@
 		})
 	})
 	
-	//审核不通过
-	$("#no_check").click(function(){
-		alert(1)
-	})
+
+    /* 本班考试成才详情 */
+    function click_day(day)
+    {
+        var cla_id = $("#hid1").val();
+        $.get("{{URL('grade/sel_info')}}",{cla_id:cla_id,day:day},function(msg){
+           $("#info1").html(msg);
+        })
+    }
+
+    /* PK考试成才详情 */
+    function click_day1(day)
+    {
+        var cla_id = $("#hid2").val();
+        $.get("{{URL('grade/sel_info')}}",{cla_id:cla_id,day:day},function(msg){
+            $("#info2").html(msg);
+        })
+    }
 </script>

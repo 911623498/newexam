@@ -39,7 +39,7 @@
     <span>位置：</span>
     <ul class="placeul">
         <li><a href="#">首页</a></li>
-        <li><a href="#">系统设置</a></li>
+        <li><a href="#">专业列表</a></li>
     </ul>
 </div>
 
@@ -62,7 +62,6 @@
             <table class="tablelist">
                 <thead>
                 <tr>
-                    <th><input name="" id="box" type="checkbox" value=""/></th>
                     <th>专业<i class="sort"><img src="{{URL::asset('')}}images/px.gif" /></i></th>
                     <th>备注</th>
                     <th>操作</th>
@@ -71,7 +70,6 @@
                 <tbody id="tr">
                 @foreach($data as $k=>$v)
                     <tr>
-                        <td><input name="chk_list" type="checkbox" value="{{$v['cla_id']}}" /></td>
                         <td>{{$v['cla_name']}}</td>
                         <td>{{$v['cla_intro']}}</td>
                         <td>
@@ -108,7 +106,6 @@
                     $.each(data,function(i,item){
                         $("#sp").html("<font color='red'></font>");
                         str += "<tr>";
-                        str += "<td><input name='chk_list' type='checkbox' value='' /></td>";
                         str += "<td>"+item.cla_name+"</td>";
                         str += "<td>"+item.cla_intro+"</td>";
                         str += "<td>"

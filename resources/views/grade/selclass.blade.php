@@ -39,7 +39,7 @@
     <span>位置：</span>
     <ul class="placeul">
         <li><a href="#">首页</a></li>
-        <li><a href="#">系统设置</a></li>
+        <li><a href="#">班级列表</a></li>
     </ul>
 </div>
 
@@ -56,10 +56,35 @@
             <input type="hidden" id="hid" value="{{$cla_id}}">
             <ul class="seachform">
                 <li><label>班级名称：</label><input name="" type="text"  id='key' class="scinput" placeholder="请输入班级名称"/></li>
-                <li><label>&nbsp;</label><input name="" type="button" id='btn' class="scbtn" value="查询"/></li>
+                <li><input name="" type="button" id='btn' class="scbtn" value="查询"/></li>
                 <span id='sp'></span>
-                <li style="margin-left: 400px;"><label>&nbsp;</label><input name="" type="button" id='check' class="scbtn" value="审核通过"/></li>
-                <li><label>&nbsp;</label><input name="" type="button" id='no_check' class="scbtn" value="审核不通过"/></li>
+                <li><input name="" type="button" id='check' class="scbtn" value="审核通过"/></li>
+                <li><input name="" type="button" id='no_check' class="scbtn" value="审核不通过"/></li>
+                <form action="{{URL('grade/dcxq')}}" method="post">
+                    <li style="float: right">
+
+                        <div class="vocation">
+                            <select class="select1" name="day">
+                                <?php $num=1;?>
+                                @foreach($table as $vv)
+                                    @if($vv['stu_zduan']=='yuekao')
+                                        <option value="{{$vv['stu_zduan']}}">|--月考成绩</option>
+                                    @else
+                                        @if($vv['date_status']=='2')
+                                            <option value="{{$vv['stu_zduan']}}"><font style="font-weight: bold;"> |--第<?php echo $num++;?>周考</font></option>
+                                        @else
+                                            <option value="{{$vv['stu_zduan']}}">第{{$vv['stu_zduan']}}天考试</option>
+                                        @endif
+                                    @endif
+                                @endforeach
+                            </select>
+                            <input type="hidden" value="{{$cla_id}}" name="cla_id"/>
+                        </div>
+                    </li>
+                    <li  style="float: right">
+                        <input name="" type="submit" class="scbtn" value="导出考试详情"/>
+                    </li>
+                </form>
             </ul>
             <table class="tablelist">
                 <thead>
@@ -95,7 +120,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <div>{!! $data->render() !!}</div>
+            {{--<div>{!! $data->render() !!}</div>--}}
         </div>
     </div>
     <script type="text/javascript">
@@ -133,6 +158,7 @@
                         str += "</tr>"
                     });
                     $("#tr").html(str);
+//                    $("#display").hide();
                 })
             }
         })

@@ -39,7 +39,7 @@
     <span>位置：</span>
     <ul class="placeul">
         <li><a href="#">首页</a></li>
-        <li><a href="#">系统设置</a></li>
+        <li><a href="#">成绩列表</a></li>
     </ul>
 </div>
 
@@ -62,20 +62,28 @@
                         <span style="height: 30px;width: 50px;  float: right;font-size: 20px; color: blue" >理论</span>
                     </div>
                 </li>
+                <div id="info1">
+                    <li style="float: right"><input name="" type="button"  value="成才率:"/>{{$arr1['chengcaikv']}}</li>
+                    <li style="float: right"><input name="" type="button"  value="出勤率:"/>{{$arr1['chuqin']}}</li>
+                    <li style="float: right"><input name="" type="button"  value="作弊人数:"/>{{$arr1['zuobi_ll']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="请假/休学人数:"/>{{$arr1['qingxiu']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="机试不及格人数:"/>{{$arr1['bujige_js']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="理论不及格人数:"/>{{$arr1['bujige_ll']}}人</li>
+                    <li style="float: right"><input name="" type="button"  value="班级人数:"/>{{$arr1['renshu']}}人</li>
+                </div>
             </ul>
             <table class="tablelist">
                 <thead>
+                <?php $num=1;?>
                 <tr id="btn3">
-                    <?php $num=1;?>
                     <th>姓名</th>
                     @foreach($table as $k=>$v)
                         @if($v['date_status']==1)
-                            <th>
-                                {{$v['stu_zduan']}}天</th>
+                            <th><a href="javascript:" onclick="click_day({{$v['stu_zduan']}})">{{$v['stu_zduan']}}天</a></th>
                         @elseif($v['date_status']==2)
-                            <th>周考{{$num++}}</th>
+                            <th><a href="javascript:" onclick="click_day({{$v['stu_zduan']}})">周考{{$num++}}</a></th>
                         @elseif($v['date_status']==3)
-                            <th>月考</th>
+                            <th><a href="javascript:" onclick='click_day("{{$v['stu_zduan']}}")'>月考</a></th>
                         @endif
                     @endforeach
                 </tr>
@@ -118,6 +126,7 @@
             </table>
         </div>
     </div>
+    <input type="hidden" value="{{$cla_id}}" id="hid1"/>
     <script type="text/javascript">
         $("#usual1 ul").idTabs();
     </script>
@@ -125,30 +134,41 @@
     <script type="text/javascript">
         $('.tablelist tbody tr:odd').addClass('odd');
     </script>
+
+    <!-- 固定悬浮 -->
+    <script>
+        $(document).ready(function(){
+            //得到截止部分到顶部距离
+            var btn3top=$("#btn3").offset().top;
+            //alert(btn3top);
+            //获取浏览器对象（window） 滚动属性（scroll）
+            $(window).scroll(function (){
+                //获取滚动条滚动距离
+                var WT = $(this).scrollTop();
+                //alert(WT);
+                //判断滚动条滚动距离是否大于或等于截止距离
+                if(WT  >= btn3top)
+                {
+                    //如果大于或等于截止距离 那么截止距离就等于滚动条距离
+                    $("#btn3").offset({'top':WT});
+                }
+                else
+                {
+                    $("#btn3").offset({'top':btn3top});
+                }
+            });
+        });
+
+        /* 本班考试成才详情 */
+        function click_day(day)
+        {
+            var cla_id = $("#hid1").val();
+            $.get("{{URL('grade/sel_info')}}",{cla_id:cla_id,day:day},function(msg){
+                $("#info1").html(msg);
+            })
+        }
+    </script>
 </div>
 </body>
 </html>
-<!-- 固定悬浮 -->
-<script>
-    $(document).ready(function(){
-        //得到截止部分到顶部距离
-        var btn3top=$("#btn3").offset().top;
-        //alert(btn3top);
-        //获取浏览器对象（window） 滚动属性（scroll）
-        $(window).scroll(function (){
-            //获取滚动条滚动距离
-            var WT = $(this).scrollTop();
-            //alert(WT);
-            //判断滚动条滚动距离是否大于或等于截止距离
-            if(WT  >= btn3top)
-            {
-                //如果大于或等于截止距离 那么截止距离就等于滚动条距离
-                $("#btn3").offset({'top':WT});
-            }
-            else
-            {
-                $("#btn3").offset({'top':btn3top});
-            }
-        });
-    });
-</script>
+

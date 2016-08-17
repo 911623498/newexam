@@ -39,7 +39,7 @@
     <span>位置：</span>
     <ul class="placeul">
         <li><a href="#">首页</a></li>
-        <li><a href="#">系统设置</a></li>
+        <li><a href="#">班级列表</a></li>
     </ul>
 </div>
 
@@ -57,12 +57,38 @@
             <ul class="seachform">
                 <li><label>班级名称：</label><input name="" type="text"  id='key' class="scinput" placeholder="请输入班级名称"/></li>
                 <li><label>&nbsp;</label><input name="" type="button" id='btn' class="scbtn" value="查询"/></li>
+
+                <form action="{{URL('grade/dcxq')}}" method="post">
+                    <li style="float: right">
+                        <label></label>
+                        <div class="vocation">
+                            <select class="select1" name="day">
+                                <?php $num=1;?>
+                                @foreach($table as $vv)
+                                    @if($vv['stu_zduan']=='yuekao')
+                                        <option value="{{$vv['stu_zduan']}}">|--月考成绩</option>
+                                    @else
+                                        @if($vv['date_status']=='2')
+                                            <option value="{{$vv['stu_zduan']}}"><font style="font-weight: bold;"> |--第<?php echo $num++;?>周考</font></option>
+                                        @else
+                                            <option value="{{$vv['stu_zduan']}}">第{{$vv['stu_zduan']}}天考试</option>
+                                        @endif
+                                    @endif
+                                @endforeach
+                            </select>
+                            <input type="hidden" value="{{$cla_id}}" name="cla_id"/>
+                        </div>
+                    </li>
+                    <li  style="float: right">
+                        <label>&nbsp;</label><input name="" type="submit" class="scbtn" value="导出考试详情"/>
+                    </li>
+                </form>
+
                 <span id='sp'></span>
             </ul>
             <table class="tablelist">
                 <thead>
                 <tr>
-                    <th><input name="" id="box" type="checkbox" value=""/></th>
                     <th>班级<i class="sort"><img src="{{URL::asset('')}}images/px.gif" /></i></th>
                     <th>备注</th>
                     <th>操作</th>
@@ -71,7 +97,6 @@
                 <tbody id="tr">
                 @foreach($data as $k=>$v)
                     <tr>
-                        <td><input name="chk_list" type="checkbox" value="{{$v['cla_id']}}" /></td>
                         <td>{{$v['cla_name']}}</td>
                         <td>{{$v['cla_intro']}}</td>
                         <td>
@@ -82,7 +107,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <div>{!! $data->render() !!}</div>
+            <div id="display">{!! $data->render() !!}</div>
         </div>
     </div>
     <script type="text/javascript">
@@ -107,10 +132,8 @@
                     $.each(data,function(i,item){
                         $("#sp").html("<font color='red'></font>");
                         str += "<tr>";
-                        str += "<td><input name='chk_list' type='checkbox' value='' /></td>";
                         str += "<td>"+item.cla_name+"</td>";
                         str += "<td>"+item.cla_intro+"</td>";
-                        str += "<td>已审核</td>";
                         str += "<td>"
                         str += "<a href={{URL('grade/look_class')}}?id="+item.cla_id+" class='tablelink'>查看</a>";
                         str += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -118,6 +141,7 @@
                         str += "</tr>"
                     });
                     $("#tr").html(str);
+                    $("#display").hide();
                 })
             }
         })
@@ -180,6 +204,7 @@
                 })
             }
         })
+
     </script>
 </div>
 </body>

@@ -39,7 +39,7 @@
     <span>位置：</span>
     <ul class="placeul">
         <li><a href="#">首页</a></li>
-        <li><a href="#">系统设置</a></li>
+        <li><a href="#">学院</a></li>
     </ul>
 </div>
 
