@@ -108,6 +108,7 @@
                         if(msg=='1')
                         {
                             $("#check").html("");
+
                             window.location.href=localhostPaht+projectName+"/public/grade/look";
                         }
                         else
@@ -136,6 +137,9 @@
                     }
                     else
                     {
+                      // $(".select2").val("e");
+                        $(".select2").find("option[text='正常']").attr("selected",true);
+                        $(".select2").find("option[text='正常']").val("e");
                         $(".grade").val("");
                     }
                 }
@@ -207,8 +211,8 @@
             <div class="lright">
                 <h2>姓名：{{$v['stu_name']}}</h2>
                 <p>学号：{{$v['stu_care']}}</p>
-               组员状态： <select name="" id="" onchange="showMsg(this,{{$v['stu_id']}})" style="width: 50px;height: 20px;border: solid  1px #000000;margin-top: 8px;">
-                    <option value="e" selected = "selected">正常</option>
+               组员状态： <select name="" class="select2" onchange="showMsg(this,{{$v['stu_id']}})" style="width: 50px;height: 20px;border: solid  1px #000000;margin-top: 8px;">
+                    <option value="e" selected ="selected">正常</option>
                     <option value="d">监考</option>
                     <option value="a">请假</option>
                     <option value="c">休学</option>

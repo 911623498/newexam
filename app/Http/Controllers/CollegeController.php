@@ -61,9 +61,13 @@ class CollegeController extends CommonController
 //            print_r($se);die;
 			$users=DB::table('man_class')->where('cla_pid', '=',$se['cla_id'])->paginate(5);
 			//$str="";
+			//用户信息
             $us=DB::table('man_class')->where('cla_id', '=',$se['cla_id'])->first();
+			//用户的学院
             $xy=DB::table('man_class')->where('cla_id', '=',$us['cla_pid'])->first();
-            $xi=DB::table('man_class')->where('cla_pid', '=',$xy['cla_id'])->get();
+			//用户的系
+			$xi=$us['cla_id'];
+            //$xi=DB::table('man_class')->where('cla_pid', '=',$xy['cla_id'])->get();
             $xy=$xy['cla_name'];
             $jd=$us['cla_name'];
 //            print_r($xy);
@@ -162,6 +166,9 @@ class CollegeController extends CommonController
         $id=$_POST['id'];
         $name=$_POST['cla_name'];
         $info=$_POST['cla_intro'];
+		if(empty($name)){
+			 echo "<script>alert('学院名称不能为空！');location.href='college';</script>";die;
+		}
         $user = DB::table('man_class')->where('cla_name', "$name")->first();
         if($id){
                 $re=DB::table('man_class')
@@ -250,12 +257,13 @@ class CollegeController extends CommonController
         $info=$_POST['cla_intro'];
 		$cla_tea=$_POST['cla_tea'];
         $cla_mph=$_POST['cla_mph'];
+        $jd=$_POST['cla_xi'];
 		//print_r($_POST);die;
         $user = DB::table('man_class')->where('cla_name', "$name")->first();
         if($id){
             $re=DB::table('man_class')
                 ->where('cla_id', "$id")
-                ->update( ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_tea'=>"$cla_tea",'cla_mph'=>"$cla_mph",'cla_pid'=>"$xy"]);
+                ->update( ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_tea'=>"$cla_tea",'cla_mph'=>"$cla_mph",'cla_pid'=>"$xy",'cla_jd'=>"$jd"]);
             if($re){
                 echo "<script>alert('修改成功');location.href='classes';</script>";
             }else{
@@ -263,20 +271,22 @@ class CollegeController extends CommonController
 
             }
         }else{
+			if(empty($name)){
+			echo "<script>alert('班级名称不能为空！');location.href='classes';</script>";die;
+		}
             $id = DB::table('man_class')->insertGetId(
-                ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_tea'=>"$cla_tea",'cla_mph'=>"$cla_mph",'cla_pid'=>"$xy"]
+                ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_tea'=>"$cla_tea",'cla_mph'=>"$cla_mph",'cla_pid'=>"$xy",'cla_jd'=>"$jd"]
             );
             if($id){
-				$userId = $this->generate_username(6);
                 $id = DB::table('man_user')->insertGetId(
-                    array('use_name' => "$userId", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
+                    array('use_name' => "$name", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
                 );
                 $users = DB::table('man_role')->where('role_name', "讲师")->first();
                 if($users){
                     DB::table('man_user_role')->insertGetId(
                         array('use_id' => "$id", 'role_id' => $users['role_id'])
                     );
-                    echo "<script>alert('账号为：".$userId.",密码为：123');location.href='classes';</script>";
+                    echo "<script>alert('账号为：".$name.",密码为：123');location.href='classes';</script>";
                 }else{
                     echo "<script>alert('没有相关角色，请先添加角色！');location.href='classes';</script>";die;
                 }
@@ -293,18 +303,23 @@ public function pkclass(){
     $user = DB::table('man_class')->where('cla_name', "$name")->first();
     if($user){
 //        print_r($user);
-        $pk = DB::table('man_class')->where('cla_id', "$id")->first();
-        if($user['cla_pid']==$pk['cla_pid']){
-            $re=DB::table('man_class')
-                ->where('cla_id', "$id")
-                ->update( ['cla_pk'=>$user['cla_name']]);
-            $re=DB::table('man_class')
-                ->where('cla_id', $user['cla_id'])
-                ->update( ['cla_pk'=>$pk['cla_name']]);
-            echo "1";
-        }else{
-            echo "2";
-        }
+		$pk = DB::table('man_class')->where('cla_pk', "$name")->first();
+		if($pk){
+			 echo "3";
+		}else{
+			$pk = DB::table('man_class')->where('cla_id', "$id")->first();
+			if($user['cla_pid']==$pk['cla_pid']){
+				$re=DB::table('man_class')
+					->where('cla_id', "$id")
+					->update( ['cla_pk'=>$user['cla_name']]);
+				$re=DB::table('man_class')
+					->where('cla_id', $user['cla_id'])
+					->update( ['cla_pk'=>$pk['cla_name']]);
+				echo "1";
+			}else{
+				echo "2";
+			}
+		}
     }else{
         echo "0";
     }
@@ -321,11 +336,15 @@ public function jdes(){
 		 return view('college.jdlist',['users'=>$user,'xy'=>$xy]);
 }
 public function jdadd(){
+	  //echo "wda";die;
 	$se=$_SESSION['user'];
 	$pid=$se['cla_id'];
 	 $id=$_POST['id'];
         $name=$_POST['cla_name'];
         $info=$_POST['cla_intro'];
+		if(empty($name)){
+			 echo "<script>alert('系名称不能为空！');location.href='jdes';</script>";die;
+		}
         $user = DB::table('man_class')->where('cla_name', "$name")->first();
         if($id){
                 $re=DB::table('man_class')
@@ -361,10 +380,67 @@ public function jdadd(){
                 }
          }
 }
+//删除班级
+ public function classdel()
+    {
+        $id=$_GET['id'];
+        $user = DB::table('man_class')->where('cla_pid', "$id")->first();
+        if($user){
+            echo "<script>alert('此信息下面有分类，不能删除！');location.href='classes'</script>";die;
+        }
+        $user = DB::table('man_class')->where('cla_id', "$id")->first();
+        $re=DB::table('man_class')->where('cla_id',"$id")->delete();
+        if($re){
+            $users = DB::table('man_user')->where('cla_id', $user['cla_id'])->first();
+            $re=DB::table('man_user')->where('cla_id',$user['cla_id'])->delete();
+            if($re){
+                DB::table('man_user_role')->where('use_id', $users['use_id'])->first();
+                $re=DB::table('man_user_role')->where('use_id',$users['use_id'])->delete();
+                if($re){
+                    echo "<script>alert('删除成功！');location.href='classes'</script>";die;
+                }else{
+                    echo "<script>alert('删除失败！');location.href='classes'</script>";die;
+                }
+            }else{
+                echo "<script>alert('删除账号失败！');location.href='classes'</script>";die;
+            }
 
 
+        }else{
+            echo "<script>alert('删除学院失败');location.href='classes'</script>";
+        }
+    }
+
+//删除系
+public function jddel()
+    {
+        $id=$_GET['id'];
+        $user = DB::table('man_class')->where('cla_pid', "$id")->first();
+        if($user){
+            echo "<script>alert('此信息下面有分类，不能删除！');location.href='jdes'</script>";die;
+        }
+        $user = DB::table('man_class')->where('cla_id', "$id")->first();
+        $re=DB::table('man_class')->where('cla_id',"$id")->delete();
+        if($re){
+            $users = DB::table('man_user')->where('cla_id', $user['cla_id'])->first();
+            $re=DB::table('man_user')->where('cla_id',$user['cla_id'])->delete();
+            if($re){
+                DB::table('man_user_role')->where('use_id', $users['use_id'])->first();
+                $re=DB::table('man_user_role')->where('use_id',$users['use_id'])->delete();
+                if($re){
+                    echo "<script>alert('删除成功！');location.href='jdes'</script>";die;
+                }else{
+                    echo "<script>alert('删除失败！');location.href='jdes'</script>";die;
+                }
+            }else{
+                echo "<script>alert('删除账号失败！');location.href='jdes'</script>";die;
+            }
 
 
+        }else{
+            echo "<script>alert('删除学院失败');location.href='jdes'</script>";
+        }
+    }
 
  function create_password($pw_length = 4){
             $randpwd = '';

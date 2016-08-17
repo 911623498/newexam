@@ -81,8 +81,8 @@ $(document).ready(function(){
 
     <tr>
     <td class="imgtd">{{ $user['cla_name'] }}</td>
-    <td><a href="#">{{ $user['cla_intro'] }}</a><p>发布时间：2013-10-12 09:25:18</p></td>
-    <td><a href="#" onclick="fun2({{$user['cla_id'] }})">修改</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="{{URL('college/cladel')}}?id={{$user['cla_id'] }}">删除</a><p>ID:{{$user['cla_id']}}</p></td>
+    <td><a href="#">{{ $user['cla_intro'] }}</a><p></p></td>
+    <td><a href="#" onclick="fun2({{$user['cla_id'] }})">修改</a>&nbsp&nbsp&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp<a href="{{URL('college/jddel')}}?id={{$user['cla_id'] }}">删除</a><p>ID:{{$user['cla_id']}}</p></td>
     </tr>
     @endforeach
   
@@ -113,7 +113,7 @@ $(document).ready(function(){
                 <input type="hidden" id="token" name="_token" value="<?php echo csrf_token();?>"/>
                 <span><img src="{{URL::asset('')}}images/ticon.png" /></span>
                 <div class="tipright">
-                    <p>阶段名称：<input type="text" id="cla_name" name="cla_name" onblur="fun1()"/></p>
+                    <p>系名称：<input type="text" id="cla_name" name="cla_name" onblur="fun1()"/></p>
                     <cite>描述：<input type="text" id="cla_intro" name="cla_intro"/></cite>
                     <input type="hidden" id="id" name="id" value=""/>
                 </div>

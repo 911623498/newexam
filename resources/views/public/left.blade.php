@@ -74,7 +74,7 @@ $(function(){
                 <ul class="menuson">
                     <li><cite></cite><a href="{{URL('college/college')}}" target="rightFrame">学院列表</a><i></i></li>
                     <li><cite></cite><a href="{{URL('college/classes')}}" target="rightFrame">班级列表</a><i></i></li>
-					 <li><cite></cite><a href="{{URL('college/jdes')}}" target="rightFrame">阶段列表</a><i></i></li>
+					 <li><cite></cite><a href="{{URL('college/jdes')}}" target="rightFrame">系列表</a><i></i></li>
                 </ul>
             </dd>
             <dd><div class="title"><span><img src="{{URL::asset('')}}images/leftico04.png" /></span>组建管理</div>

@@ -17,11 +17,53 @@ class GradeController extends CommonController
 
 //        $_SESSION['user']['role_id']=3;
 //        $_SESSION['user']['use_id']=29;
-        //$role_id=$_SESSION['user']['role_id'];
+        $role_id=$_SESSION['user']['role_id'];
         $user_id=$_SESSION['user']['use_id'];
         //print_r($_SESSION);die;
         ///echo $user_id;die;
         //查询角色所在班级
+        switch ($role_id)
+        {
+            case 2:
+                //print_r($_SESSION);die;
+                ///echo $user_id;die;
+                //查询角色所在班级
+                $class=DB::select("select * from man_user where use_id = $user_id");
+                //print_r($class);die;
+                if($class[0]['cla_id']==0)
+                {
+                    return redirect('index/right');die;
+                }
+                //echo $class[0]['cla_id'];die;
+                $user_class=DB::select("select * from man_class where cla_id =".$class[0]['cla_id']);
+
+                $group=DB::select("select * from man_student where cla_id =" .$class[0]['cla_id']." and stu_pid=1" );
+                //print_r($c);
+                $num=count($group);
+                return view('grade.group',['data'=>$group,'num'=>$num,'class_name'=>$user_class[0]['cla_name']]);
+
+                 break;
+            case 3:
+
+                //查询角色所在班级
+                $class=DB::select("select * from man_user where use_id = $user_id");
+                //print_r($class);die;
+                if($class[0]['cla_id']==0)
+                {
+                    return redirect('index/right');die;
+                }
+                //echo $class[0]['cla_id'];die;
+                $user_class=DB::select("select * from man_class where cla_id =".$class[0]['cla_id']);
+
+                $group=DB::select("select * from man_student where cla_id =" .$class[0]['cla_id']." and stu_pid=1 and stu_care=".$class[0]['use_name']."" );
+                //print_r($group);die;
+                $num=count($group);
+                return view('grade.group',['data'=>$group,'num'=>$num,'class_name'=>$user_class[0]['cla_name']]);
+
+                break;
+
+        }
+
         $class=DB::select("select * from man_user where use_id = $user_id");
         //print_r($class);die;
         if($class[0]['cla_id']==0)
@@ -30,7 +72,7 @@ class GradeController extends CommonController
         }
         //echo $class[0]['cla_id'];die;
         $user_class=DB::select("select * from man_class where cla_id =".$class[0]['cla_id']);
-       //
+
         $group=DB::select("select * from man_student where cla_id =" .$class[0]['cla_id']." and stu_pid=1" );
         //print_r($c);
         $num=count($group);
