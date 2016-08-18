@@ -236,23 +236,17 @@ class GradeController extends CommonController
      */
     public function look()
     {
-
         @$role_id = $_SESSION['user']['role_id'];  //登录用户的角色
         @$cla_id = $_SESSION['user']['cla_id'];  //登录用户的学院（班级）
         switch ($role_id){
             case 1 :
-                //教务 （学院）查询这是哪个学院的教务 根据学院查询  系
-                $res = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
-                $cla_pid = $res[0]['cla_id']; //学院ID
-                $cla_name = $res[0]['cla_name']; //学院名称
-                $data['cla_name'] = $cla_name;
-                $data['data'] = DB::table('man_class')->where(["cla_pid" => $cla_pid])->paginate(5);
-                $data['role_id'] = $role_id;
-                $data['cla_id'] = $cla_id ;
-                //print_r($data);die;
-                return view('grade.jwlook',$data);
+                //校长
+                $res = DB::table('man_class')->where(["cla_pid" => 0])->get();
+                $data['data'] = $res;
+                return view('grade.xiaolook',$data);
                 break;
             case 2 :
+
                 //查询考试标题
                 $date = DB::table('man_date')->get();
                 foreach($date as $k=>$v){
@@ -261,8 +255,7 @@ class GradeController extends CommonController
                     }
                 }
                 $data['table'] = $date;
-                //print_r($data['table']);die;
-                //教务 查询这是哪个学院的教务 根据学院查询所有班级
+//print_r($data['table']);die;
                 $res = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
                 $cla_pid = $res[0]['cla_id']; //班班级id
                 $cla_name = $res[0]['cla_name']; //本班级名称
@@ -272,8 +265,10 @@ class GradeController extends CommonController
                 {
                     $pk[0]['cla_id']=1;
                 }
+
                 $pk_id = $pk[0]['cla_id']; //pk班级id
                 $data['pkid'] = $pk_id;
+                $data['cla_id'] = $cla_pid;
                 $data['cla_name'] = $cla_name;
                 $data['pk_name'] = $pk_name;
                 $data['cla_class'] = DB::table('man_student')->where(["cla_id" => $cla_pid])->orderBy('stu_group', 'asc')->get();
@@ -317,7 +312,6 @@ class GradeController extends CommonController
                         foreach($data['pk_class'][$i][$j] as $k=>$v){
                             if($v<90)
                             {
-                                #8b0000
                                 $data['pk_class'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['pk_class'][$i][$j][$k],"<font color='gray'>".$data['pk_class'][$i][$j][$k]."</font>");
                             }
                             if($v=="")
@@ -328,7 +322,13 @@ class GradeController extends CommonController
                     }
                     $data['pk_class'][$i]['yuekao'] = explode(',',$data['pk_class'][$i]['yuekao']);
                 }
-               // print_r($data);die;
+                // print_r($data);die;
+                //本班查询默认第一天成绩成材率
+                $data['arr1'] = $this->sel_status($cla_id);
+                //pk班查询默认第一天成绩成材率
+                $data['arr2'] = $this->sel_status($pk_id);
+
+
                 $data['role_id'] = $role_id;
                 return view('grade.jslook',$data);
                 break;
@@ -348,6 +348,7 @@ class GradeController extends CommonController
                 $data['data'] = $res;
                 $data['cla_name'] = $cla_name;
                 $data['role_id'] = $role_id;
+                $data['cla_id'] = $cla_id;
                 for($i=0;$i<$sum_cla;$i++){
                     for($j=1;$j<=20;$j++){
                         $data['data'][$i][$j] = explode(',',$data['data'][$i][$j]);
@@ -375,6 +376,8 @@ class GradeController extends CommonController
                         }
                     }
                 }
+                //本班查询默认第一天成绩成材率
+                $data['arr1'] = $this->sel_status($cla_id);
                 return view('grade.zzlook',$data);
                 break;
             case 5:
@@ -393,6 +396,7 @@ class GradeController extends CommonController
                 $data['data'] = $res;
                 $data['cla_name'] = $cla_name;
                 $data['role_id'] = $role_id;
+                $data['cla_id'] = $cla_id;
                 for($i=0;$i<$sum_cla;$i++){
                     for($j=1;$j<=20;$j++){
                         $data['data'][$i][$j] = explode(',',$data['data'][$i][$j]);
@@ -420,10 +424,21 @@ class GradeController extends CommonController
                         }
                     }
                 }
+                //本班查询默认第一天成绩成材率
+                $data['arr1'] = $this->sel_status($cla_id);
                 return view('grade.zzlook',$data);
                 break;
             case 7 :
                 //系主任
+                //查询考试标题
+                $date = DB::table('man_date')->get();
+                foreach($date as $k=>$v){
+                    if($v['date_status']==0){
+                        unset($date[$k]);
+                    }
+                }
+                $data['table'] = $date;
+
                 $re = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
                 $cla_name = $re[0]['cla_name']; //系名称
 
@@ -432,7 +447,6 @@ class GradeController extends CommonController
 
                 $data['data'] = $res;
                 $data['cla_id'] = $cla_id ;
-
                 return view('grade.xiclass',$data);
                 break;
             case 8:
@@ -478,7 +492,6 @@ class GradeController extends CommonController
      */
     public function look_class( Request $request )
     {
-
         //查询考试标题
         $date = DB::table('man_date')->get();
         foreach($date as $k=>$v){
@@ -494,13 +507,17 @@ class GradeController extends CommonController
         $sum_cla = count($res);
         $data['data'] = $res;
         $data['cla_name'] = $cla_name;
+        $data['cla_id'] = $cla_id;
+        //查询默认第一天成绩
+        $data['arr'] = $this->sel_status($cla_id);
+
         for($i=0;$i<$sum_cla;$i++){
             for($j=1;$j<=20;$j++){
                 $data['data'][$i][$j] = explode(',',$data['data'][$i][$j]);
                 foreach($data['data'][$i][$j] as $k=>$v){
                     if($v<90)
                     {
-                    #8b0000
+                        #8b0000
                         $data['data'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['data'][$i][$j][$k],"<font color='gray'>".$data['data'][$i][$j][$k]."</font>");
                     }
                     if($v=="")
@@ -521,10 +538,9 @@ class GradeController extends CommonController
                 }
             }
         }
-
-        //print_r($data);
+        //本班查询默认第一天成绩成材率
+        $data['arr1'] = $this->sel_status($cla_id);
         return view('grade.classlook',$data);
-//        return view('grade.cjd',$data);
     }
 
 
@@ -544,12 +560,13 @@ class GradeController extends CommonController
     }
     public function sel_class1( request $request )
     {
+//        echo 1;die;
         //接受查询班级名称
         $cla_name = $request->input('key');
 
         //学院ID
         $cla_id = $request->input('cla_id');
-
+//echo $cla_id;die;
         $re = DB::table('man_class')->where(['cla_pid'=>$cla_id])->get();
 
         $pid = "";
@@ -584,7 +601,30 @@ class GradeController extends CommonController
         $user = $_SESSION['user'];
         $cla_id = $user['cla_id'];
         $re = DB::table('check_exam')->where(['cla_id'=>$cla_id])->get();
+        $res = DB::table('man_date')->get();
         $data['check'] = $re;
+        $data['checks'] = $res;
+//        $num=1;
+//        foreach($data['checks'] as $k=>$v)
+//        {
+//           if($v['date_status']==2)
+//           {
+//               $data['checks'][$k]['num']=$num++;
+//           }
+//        }
+      // print_r($data['checks']);die;
+        foreach($data['checks'] as $k=>$v)
+        {
+            foreach($data['check'] as $kk=>$vv)
+            {
+                if($vv['exam_day']==$v['stu_zduan'])
+                {
+                    $data['check'][$kk]['date_status']=$v['date_status'];
+                }
+            }
+        }
+//        print_r($data['check']);
+//        die;
         return view('grade.check',$data);
     }
 
@@ -690,7 +730,7 @@ class GradeController extends CommonController
         for($i=0;$i<$sum_cla;$i++){
             for($j=1;$j<=20;$j++){
                 if($res[$i][$j]){
-                $res[$i][$j] = explode(',',$res[$i][$j]);
+                    $res[$i][$j] = explode(',',$res[$i][$j]);
                 }else{
                     $res[$i][$j][]="";
                     $res[$i][$j][]="";
@@ -769,11 +809,353 @@ class GradeController extends CommonController
      */
     public function sel_classs( Request $request )
     {
+        //查询考试标题
+        $date = DB::table('man_date')->get();
+        foreach($date as $k=>$v){
+            if($v['date_status']==0){
+                unset($date[$k]);
+            }
+        }
+        $data['table'] = $date;
+
         $cla_pid = $request->input('id');
         $data['cla_id'] = $cla_pid;
         $data['cla_name'] = $cla_pid = $request->input('cla_name');
-        $data['data'] = DB::table('man_class')->where(["cla_pid" => $data['cla_id']])->paginate(5);
+        $data['data'] = DB::table('man_class')->where(["cla_pid" => $data['cla_id']])->get();
 
         return view('grade.selclass',$data);
+    }
+
+    /**
+     * 查看某天班级开始各种状况
+     */
+    public function sel_status( $cla_id ,$day=1 )
+    {
+        error_reporting(0);
+        $res = DB::table('man_student')->select($day)->where(["cla_id" => $cla_id])->get(); //本班级学生成绩
+        //print_r($res);die;
+        $data = $res;
+        $sum_cla = count($data);
+        //echo $sum_cla;die;
+        for($i=0;$i<$sum_cla;$i++)
+        {
+            for($j=1;$j<=20;$j++)
+            {
+                $data[$i][$j] = explode(',',$data[$i][$j]);
+            }
+            $data[$i]['yuekao'] = explode(',',$data[$i]['yuekao']);
+        }
+        $new_data = "";
+        foreach($data as $k=>$v)
+        {
+            $new_data[] = $v[$day];
+        }
+        //print_r($new_data);
+
+        $qingjia_ll = 0;
+        $xiuxue_ll = 0;
+        $bujige_ll = 0;
+        $zuobi_ll = 0;
+        $jige_ll = 0;
+
+        $qingjia_js = 0;
+        $xiuxue_js = 0;
+        $bujige_js = 0;
+        $zuobi_js = 0;
+        $jige_js = 0;
+
+        $ccl = 0;
+        foreach($new_data as $kk=>$vv)
+        {
+            if(($vv[0] >= 90 || $vv[0] == "监考") && ($vv[1] >= 90 || $vv[1] == "监考") )
+            {
+                $ccl += 1;
+            }
+            //$ll[] = $vv[0]; //理论成绩
+            if($vv[0] == "请假")
+            {
+                $qingjia_ll += 1;
+            }
+            if($vv[0] == "休学")
+            {
+                $xiuxue_ll += 1;
+            }
+            if($vv[0] == "作弊")
+            {
+                $zuobi_ll += 1;
+            }
+            if($vv[0] >= 90 || $vv[0] == "监考") //及格
+            {
+                $jige_ll += 1;
+            }
+            if($vv[0] < 90) //不及格
+            {
+                $bujige_ll += 1;
+            }
+            //$js[] = $vv[1]; //机试成绩
+            if($vv[1] == "请假")
+            {
+                $qingjia_js += 1;
+            }
+            if($vv[1] == "休学")
+            {
+                $xiuxue_js += 1;
+            }
+            if($vv[1] == "作弊")
+            {
+                $zuobi_js += 1;
+            }
+            if($vv[1] >= 90 || $vv[1] == "监考") //及格
+            {
+                $jige_js += 1;
+            }
+            if($vv[1] < 90) //不及格
+            {
+                $bujige_js += 1;
+            }
+        }
+        $arr['qingjia_ll'] = $qingjia_ll;
+        $arr['xiuxue_ll'] = $xiuxue_ll;
+        $arr['bujige_ll'] = $bujige_ll;
+        $arr['zuobi_ll'] = $zuobi_ll;
+        $arr['jige_ll'] = $jige_ll;
+
+        $arr['qingjia_js'] = $qingjia_js;
+        $arr['xiuxue_js'] = $xiuxue_js;
+        $arr['bujige_js'] = $bujige_js;
+        $arr['zuobi_js'] = $zuobi_js;
+        $arr['jige_js'] = $jige_js;
+        $arr['renshu'] = $sum_cla;
+        $chuqin = $sum_cla - ($qingjia_ll+$xiuxue_ll);
+        $arr['chuqin'] = round(( $chuqin / $sum_cla ) * 100,2)."%";
+        $arr['chuqin'] = round(( $chuqin / $sum_cla ) * 100,2)."%";
+        $new_ccl = round(( $ccl / $sum_cla ) * 100,2)."%";
+        $arr['chengcaikv'] = $new_ccl;
+        $arr['qingxiu'] = $qingjia_js+$xiuxue_js;
+        return $arr;
+    }
+    /**
+     * 查看某天班级开始各种状况
+     */
+    public function sel_info( Request $request )
+    {
+        $cla_id = $request->input('cla_id');
+        $day = $request->input('day');
+
+        error_reporting(0);
+        $res = DB::table('man_student')->select("$day")->where(["cla_id" => $cla_id])->get(); //本班级学生成绩
+//        print_r($res);die;
+        $data = $res;
+        $sum_cla = count($data);
+        //echo $sum_cla;die;
+        for($i=0;$i<$sum_cla;$i++)
+        {
+            for($j=1;$j<=20;$j++)
+            {
+                $data[$i][$j] = explode(',',$data[$i][$j]);
+            }
+            $data[$i]['yuekao'] = explode(',',$data[$i]['yuekao']);
+        }
+        $new_data = "";
+        foreach($data as $k=>$v)
+        {
+            $new_data[] = $v[$day];
+        }
+//        print_r($new_data);
+
+        $qingjia_ll = 0;
+        $xiuxue_ll = 0;
+        $bujige_ll = 0;
+        $zuobi_ll = 0;
+        $jige_ll = 0;
+
+        $qingjia_js = 0;
+        $xiuxue_js = 0;
+        $bujige_js = 0;
+        $zuobi_js = 0;
+        $jige_js = 0;
+
+        $ccl = 0;
+        foreach($new_data as $kk=>$vv)
+        {
+            if(($vv[0] >= 90 || $vv[0] == "监考") && ($vv[1] >= 90 || $vv[1] == "监考") )
+            {
+                $ccl += 1;
+            }
+            //$ll[] = $vv[0]; //理论成绩
+            if($vv[0] == "请假")
+            {
+                $qingjia_ll += 1;
+            }
+            if($vv[0] == "休学")
+            {
+                $xiuxue_ll += 1;
+            }
+            if($vv[0] == "作弊")
+            {
+                $zuobi_ll += 1;
+            }
+            if($vv[0] >= 90 || $vv[0] == "监考") //及格
+            {
+                $jige_ll += 1;
+            }
+            if($vv[0] < 90) //不及格
+            {
+                $bujige_ll += 1;
+            }
+            //$js[] = $vv[1]; //机试成绩
+            if($vv[1] == "请假")
+            {
+                $qingjia_js += 1;
+            }
+            if($vv[1] == "休学")
+            {
+                $xiuxue_js += 1;
+            }
+            if($vv[1] == "作弊")
+            {
+                $zuobi_js += 1;
+            }
+            if($vv[1] >= 90 || $vv[1] == "监考") //及格
+            {
+                $jige_js += 1;
+            }
+            if($vv[1] < 90) //不及格
+            {
+                $bujige_js += 1;
+            }
+        }
+
+        $arr['renshu'] = $sum_cla;
+
+        $arr['qingjia_js'] = $qingjia_js;
+        $arr['xiuxue_js'] = $xiuxue_js;
+
+        $arr['qingjia_ll'] = $qingjia_ll;
+        $arr['xiuxue_ll'] = $xiuxue_ll;
+
+        $arr['bujige_ll'] = $bujige_ll;
+        $arr['bujige_js'] = $bujige_js;
+
+        $arr['jige_ll'] = $jige_ll;
+        $arr['jige_js'] = $jige_js;
+
+        $arr['zuobi_ll'] = $zuobi_ll;
+        $arr['zuobi_js'] = $zuobi_js;
+
+        $chuqin = $sum_cla - ($qingjia_ll+$xiuxue_ll);
+        $arr['chuqin'] = round(( $chuqin / $sum_cla ) * 100,2)."%";
+        $new_ccl = round(( $ccl / $sum_cla ) * 100,2)."%";
+        $arr['chengcaikv'] = $new_ccl;
+        $arr['qingxiu'] = $qingjia_js+$xiuxue_js;
+        $data['arr'] = $arr;
+//        print_r($data['arr']);die;
+        return view('grade.info',$data);
+    }
+
+    /**
+     * 导出本系班级考试详情
+     */
+    public function dcxq( Request $request )
+    {
+        $day = $request->input('day');
+        $cla_id = $request->input('cla_id');
+        $xi = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
+        $xy = DB::table('man_class')->select('cla_name')->where(["cla_id" => $xi[0]['cla_pid']])->get();
+
+
+        error_reporting(0);
+        $data = DB::table('man_class')->select('cla_jd','cla_name','cla_mph','cla_intro','cla_tea','cla_id')->where(["cla_pid" => $cla_id])->get();
+//        print_r($data);die;
+        $ids = "";
+        foreach($data as $k=>$v)
+        {
+            $ids[] = $v['cla_id'];
+        }
+        $arr = "";
+
+        for($i=0;$i<count($ids);$i++)
+        {
+            $arr[] = $this->sel_status($ids[$i],$day);
+        }
+//        print_r($arr);die;
+        foreach($arr as $k=>$v)
+        {
+            foreach($v as $kkk=>$vvv)
+            {
+                $data[$k][$kkk] = $vvv;
+            }
+        }
+        foreach($data as $k=>$v)
+        {
+            array_unshift($data[$k],$xi[0]['cla_name']);
+            array_unshift($data[$k],$xy[0]['cla_name']);
+        }
+
+        foreach($data as $k=>$v)
+        {
+            unset($data[$k]['cla_id']);
+            unset($data[$k]['cla_pid']);
+            unset($data[$k]['cla_check']);
+            unset($data[$k]['cla_pk']);
+            unset($data[$k]['jige_ll']);
+            unset($data[$k]['qingjia_js']);
+            unset($data[$k]['xiuxue_js']);
+            unset($data[$k]['jige_js']);
+            unset($data[$k]['qingxiu']);
+            unset($data[$k]['zuobi_js']);
+        }
+
+        foreach($data as $k=>$v)
+        {
+            if($v['cla_jd']==0)
+            {
+                $data[$k]['cla_jd']="基础阶段";
+            }
+            else if($v['cla_jd']==1)
+            {
+                $data[$k]['cla_jd']="专业阶段";
+            }
+            if($v['cla_jd']==2)
+            {
+                $data[$k]['cla_jd']="高级阶段";
+            }
+        }
+
+//        print_r($data);die;
+        /////////*************开始导出***************////////////
+        error_reporting(0);
+//创建对象
+        $excel=new PHPExcel();
+//        print_r($excel);die;
+//Excel表格式,这里简略写了8列
+        $letter = array('A','B','C','D','E','F','F','G','H','I','J','K','L','M','N','O','P','Q');
+//表头数组
+        $tableheader = array('学院','系','阶段','班级','门牌号','课程','讲师','请假人数','休学人数','理论不及格人数','作弊人数','机试不及格人数','班级总人数','出勤率','成材率');
+//填充表头信息
+        for($i=0;$i<count($tableheader);$i++) {
+            $excel->getActiveSheet()->setCellValue("$letter[$i]1","$tableheader[$i]");
+        }
+//填充表格信息
+        for($i=2;$i<=count($data)+1;$i++) {
+            $j=0;
+            foreach($data[$i-2] as $key=>$value) {
+                $excel->getActiveSheet()->setCellValue("$letter[$j]$i","$value");
+                $j++;
+            }
+        }
+//创建Excel输入对象
+        $write = new \PHPExcel_Writer_Excel5($excel);
+        ob_end_clean();//清除缓冲区,避免乱码
+        header("Pragma: public");
+        header("Expires: 0");
+        header("Cache-Control:must-revalidate, post-check=0, pre-check=0");
+        header("Content-Type:application/force-download");
+        header("Content-Type:application/vnd.ms-execl");
+        header("Content-Type:application/octet-stream");
+        header("Content-Type:application/download");
+        header('Content-Disposition:attachment;filename="'.date("Y-m-d")."-".$xy[0]['cla_name']."-".$xi[0]['cla_name']."-".$day.'.xls"');
+        header("Content-Transfer-Encoding:binary");
+        $write->save('php://output');
     }
 }

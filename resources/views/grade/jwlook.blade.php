@@ -54,11 +54,6 @@
         </div>
         <div id="tab1" class="tabson">
             <input type="hidden" id="hid" value="{{$cla_id}}">
-            <ul class="seachform">
-                <li><label>班级名称：</label><input name="" type="text"  id='key' class="scinput" placeholder="请输入班级名称"/></li>
-                <li><label>&nbsp;</label><input name="" type="button" id='btn' class="scbtn" value="查询"/></li>
-                <span id='sp'></span>
-            </ul>
             <table class="tablelist">
                 <thead>
                 <tr>

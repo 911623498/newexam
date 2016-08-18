@@ -241,6 +241,7 @@
 	
 	//审核通过
 	$("#check").click(function(){
+
 		$.get("{{URL('grade/look_check')}}",{},function(msg){
 			if(msg==0){
                 alert("暂无未审核成绩");

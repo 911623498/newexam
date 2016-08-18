@@ -26,14 +26,14 @@ class IndexController extends CommonController
     public function right(){
 
         return view('public/right');
-
     }
 
-    /*消息*/
+    /*组长消息*/
     public function news(){
         $arr = cz();
        return view('news',['arr'=>$arr]);
     }
+
 
 }
 
@@ -50,7 +50,15 @@ function cz(){
         $arr = DB::select("select * from check_exam where grou_id=$grou_id and status='1'");
         //
         $sum=count($arr);
-    }else{
+    }
+    else if($role_id==2)
+    {
+//        $list = DB::select("select * from man_student where cla_id=$cla_id and stu_name='$user_names' and stu_pid='1'");
+//        $grou_id=$list[0]['stu_group'];
+        $arr = DB::select("select * from check_exam where cla_id=$cla_id and status='0'");
+        $sum=count($arr);
+    }
+    else{
         $arr="";
     }
     $_SESSION['user']['sum']=$sum;

@@ -61,8 +61,8 @@ $(document).ready(function(){
             <th>审核状态</th>
         </tr>
         </thead>
-
         <tbody>
+
         <?php
         foreach($check as $k=>$v){
         ?>
@@ -73,7 +73,11 @@ $(document).ready(function(){
             @if($v['exam_day']=='yuekao')
                         月考
                 @else
+                    @if($v['date_status']=='2')
+                        周考
+                    @else
                     <?php echo "第".$v['exam_day']."天"?>
+                    @endif
                 @endif
             </th>
             <th class="{{$v['che_id']}}">
@@ -142,6 +146,7 @@ $(document).ready(function(){
                data:{grade:grade,day:day,id:id},
                success: function(msg){
                    $("#"+id).remove();
+                   location.href="{{URL('grade/look')}}";
                }
            });
        }

@@ -83,7 +83,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('exam/exam_status','ExamController@exam_status'); //考试类型选择
 
 
-
     /** 学院管理 */
     Route::any('college/college','CollegeController@college'); //学院列表
     Route::any('college/classes','CollegeController@classes'); //考试周期列表
@@ -95,6 +94,10 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::any('college/jdes','CollegeController@jdes'); //阶段列表
     Route::any('college/jdadd','CollegeController@jdadd'); //添加阶段
+    Route::any('college/classdel','CollegeController@classdel'); //班级删除
+    Route::any('college/jddel','CollegeController@jddel'); //系删除
+
+
 
     /** 组建管理 */
     Route::any('group/ad_stu_massage','GroupController@ad_stu_massage'); //添加学生信息页面
@@ -132,6 +135,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('grade/exam_info','GradeController@exam_info'); //查看未审核列表
     Route::any('grade/dc','GradeController@dc'); //导出
     Route::any('grade/sel_classs','GradeController@sel_classs'); //导出
+
+    Route::any('grade/sel_status','GradeController@sel_status'); //查看成绩各种详情百分比
+    Route::any('grade/sel_info','GradeController@sel_info'); //查看成绩各种详情百分比
+    Route::any('grade/dcxq','GradeController@dcxq'); //导出本系下班级考试后详情
+
 
 
     /** 成才率统计 */

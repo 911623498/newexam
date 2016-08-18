@@ -1,4 +1,4 @@
-﻿<?php session_start()?>
+﻿<?php session_start();error_reporting(0);?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -46,10 +46,12 @@ $(function(){
     <div class="user">
     <span><?php echo $_SESSION['user']['use_names']?></span>
     <i>消息</i>
-        @if($_SESSION['user']['sum']==0)
-            <b>{{$_SESSION['user']['sum']}} </b>
-        @else
+             @if($_SESSION['user']['role_id']==3)
             <a href="{{URL('index/news')}}" target="rightFrame"><b>{{$_SESSION['user']['sum']}}</b></a>
+             @elseif($_SESSION['user']['role_id']==2)
+              <a href="{{URL('grade/look')}}" target="rightFrame"><b>{{$_SESSION['user']['sum']}}</b></a>
+            @else
+            <b>{{$_SESSION['user']['sum']}}</b>
         @endif
     </div>
     
