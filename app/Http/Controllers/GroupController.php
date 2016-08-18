@@ -8,16 +8,17 @@ use App\Http\Controllers\Controller;
 require_once (__DIR__."/../../../vendor/PHPExcel.php");
 use Illuminate\Support\Facades\Input;
 
-class GroupController extends CommonController
+class GroupController extends Controller
 {
 
     /**
-     * 学生信息列表
+     * 小组PK列表
+     *
      */
      public function allot()
     {
-      $cla_id = $_SESSION['user']['cla_id'];
-
+//      $cla_id = $_SESSION['user']['cla_id'];
+        $cla_id = 9;
         //PK 小组
         $pk="select * from man_pk_group INNER JOIN man_student on man_pk_group.stu_group=man_student.stu_id where man_pk_group.cla_id = '$cla_id'";
         $pk=DB::select($pk);
@@ -39,7 +40,12 @@ class GroupController extends CommonController
      */
     public function ad_stu_massage()
     {
-        return view('group/ad_stu_man');
+//        $cla_id = $_SESSION['user']['cla_id'];
+            $cla_id = 9 ;
+        $sql="select stu_group from man_student  where cla_id = $cla_id group BY stu_group";
+        $res=DB::select($sql);
+//        print_r($res);die;
+        return view('group/ad_stu_man',['list'=>$res]);
     }
     /**
      * 接受学生信息，入库
@@ -47,366 +53,247 @@ class GroupController extends CommonController
     public function addin_data()
     {
         //班级
-        $cla_id = $_SESSION['user']['cla_id'];
+//        $cla_id = $_SESSION['user']['cla_id'];
+        $cla_id = 9;
         //小组
         $zu = $_POST['zu'];
-        /**
-         * 验证
-         * 小组验证
-         */
-        $k_zu = DB::select("select stu_group from man_student where  cla_id='$cla_id'");
-//        print_r($k_zu);die;
-        if (empty($k_zu)) {
-            //验证姓名的唯一
-            $name = DB::select("select stu_name from man_student where  cla_id='$cla_id'");
-            //小组成员
-            $stu_name = $_POST['stu_name'];
-            $a = strpos($stu_name, ',');
-            //组长
-            $zu_name = substr($stu_name, 0, $a);
-            //本组成员
-            $zu_y_name = substr($stu_name, $a + 1);
-            $new_name = explode(',', $zu_y_name);
-            //学号
-            $stu_care = $_POST['stu_care'];
-            $a = strpos($stu_care, ',');
-            //组长学号
-            $zu_care = substr($stu_care, 0, $a);
-            //本组成员学号
-            $zu_y_care = substr($stu_care, $a + 1);
-            $new_care = explode(',', $zu_y_care);
+        if($zu==""){
+            $zu=0;
+        }
+//        print_r($zu);die;
+        //课程
+        $j_course=$_POST['course'];
+        $course=explode(',', $j_course);
 
-            if(empty($name)) {
-                $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ('$zu_name','1','$cla_id','$zu_care','$zu')";
-                $bb = DB::statement($sql);
-                if ($bb) {
-                    $sql1 = "select stu_id from man_student where stu_name = '$zu_name'";
-                    $as = DB::select($sql1);
-                    $stu_ids = $as[0]['stu_id'];
-                    $sql2 = "insert into man_pk_group (stu_group,cla_id) VALUES ('$stu_ids','$cla_id')";
-                    $ass = DB::statement($sql2);
-                    if ($ass) {
-                        $a = "";
-                        for ($i = 0; $i < count($new_name); $i++) {
-                            $a[$i]['name'] = $new_name[$i];
-                            //$a[$i]['name']=$new_name[$i];
-                            $a[$i]['care'] = $new_care[$i];
+        if(in_array("",$course)){
+            echo 1;die;//课程不为空
+        }
+        //重修次数
+        $j_re_next=$_POST['re_next'];
+        $re_next=explode(',', $j_re_next);
+        if(in_array("",$re_next)){
+            echo 2;die;//重修次数不为空
+        }
+        $time=date("Y-m-d H:i:s",time());
+        $ip=$_SERVER['REMOTE_ADDR'];
+        $stu_name = $_POST['stu_name'];
+        $now_name = explode(',', $stu_name);
+        if($zu==0){
+            //验证姓名唯一
+            $name = DB::select("select stu_name from man_student where  cla_id='$cla_id'");
+            $rea_name="";
+            foreach ($name as $k => $v) {
+                foreach ($v as $kk => $vv) {
+                    $rea_name[$k] = $vv;
+                }
+            }
+            $a = false;
+            foreach ($now_name as $v) {
+                if (in_array($v, $rea_name)) {
+                    $a = true;
+                    break;
+                }
+            }
+            if ($a) {
+                echo 3;
+                die;//姓名唯一
+            }
+            if(in_array("",$now_name)){
+                echo 4;die;//姓名不能为空
+            }
+
+            //验证学生号唯一
+            $care = DB::select("select stu_care from man_student where  cla_id='$cla_id'");
+            $stu_care = $_POST['stu_care'];
+            $now_care = explode(',', $stu_care);
+
+            $rea_care="";
+            foreach ($care as $k => $v) {
+                foreach ($v as $kk => $vv) {
+                    $rea_care[$k] = $vv;
+                }
+            }
+            $b = false;
+            foreach ($now_care as $v) {
+                if (in_array($v, $rea_care)) {
+                    $b = true;
+                    break;
+                }
+            }
+            if ($b) {
+                echo 5;
+                die;//学号唯一
+            }
+            if(in_array("",$now_care)){
+                echo 6;die;//学号不能为空
+            }
+
+            $stu_sql="insert into man_student (stu_name,stu_pid,cla_id,stu_group,course,stu_care,re_next) VALUES";
+            $a="";
+            for ($i = 0; $i < count($now_name); $i++) {
+                $a[$i]['rea_name'] = $now_name[$i];
+                $a[$i]['course'] = $course[$i];
+                $a[$i]['rea_care'] = $now_care[$i];
+                $a[$i]['re_next'] = $re_next[$i];
+            }
+//            print_r($a);die;
+            for ($i = 0; $i < count($a); $i++) {
+                //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
+                $stu_sql .= "('" . $a[$i]['rea_name'] . "','0','$cla_id','0','" . $a[$i]['course'] . "','" . $a[$i]['rea_care'] . "','" . $a[$i]['re_next'] . "'),";
+            }
+            $stu_sql = substr($stu_sql, 0, -1);
+            $aa = DB::statement($stu_sql);
+            if($aa){
+                $user_sql="insert into man_user (use_name,use_pwd,use_time,use_ip,use_names,cla_id) VALUES";
+                for ($j = 0; $j < count($a); $j++) {
+                    //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
+                    $user_sql .= "('" . $a[$j]['rea_care'] . "','123','$time','$ip','" . $a[$j]['rea_name'] . "','$cla_id'),";
+                }
+                $user_sql = substr($user_sql, 0, -1);
+//                echo $sql;die;
+                $bb = DB::statement($user_sql);
+                if($bb){
+                    $su=count($a);
+                    $sql="select use_id from man_user where cla_id=$cla_id ORDER BY use_id desc  limit $su";
+                    $aid = DB::select($sql);
+                    $use_id="";
+                    foreach ($aid as $k => $v) {
+                        foreach ($v as $kk => $vv) {
+                            $use_id[$k] = $vv;
                         }
-                        //print_r($a);die;
-                        $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ";
-                        for ($i = 0; $i < count($a); $i++) {
-                            //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
-                            $sql .= "('" . $a[$i]['name'] . "','0','$cla_id','" . $a[$i]['care'] . "','$zu'),";
-                        }
-                        $sql = substr($sql, 0, -1);
-                        //echo $sql;die;
-                        $aa = DB::statement($sql);
-                        if ($aa) {
-                            echo 1;
-                        } else {
-                            echo 0;
-                        }
+                    }
+                    $a="";
+                    for ($i = 0; $i < count($use_id); $i++) {
+                        $a[$i]['use_id'] = $use_id[$i];
+                        $a[$i]['role_id'] = 5;
+                    }
+                    $role_sql="insert into man_user_role (use_id,role_id)VALUES ";
+                    for ($i = 0; $i < count($a); $i++){
+                        //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
+                        $role_sql .= "('" . $a[$i]['use_id'] . "','" . $a[$i]['role_id'] . "'),";
+                    }
+                    $role_sql = substr($role_sql, 0, -1);
+//                echo $sql;die;
+                    $cc = DB::statement($role_sql);
+                    if($cc){
+                        echo 7;die;
                     }
                 }
             }else{
-                //组长名字的唯一
-                $rea_name = "";
+                echo 0;die;
+            }
+        }else{
+            //1.判断所选组的成员的个数，以及加上现在的个数是否大于6
+            $sql="select stu_id from man_student where cla_id = $cla_id and stu_group = $zu";
+            $zu_shu=count(DB::select($sql));
+            $j_count=count($now_name);
+            $count=$zu_shu+$j_count;
+            if($count>6){
+                echo 8;die;//添加的人超过所选小组人数
+            }else{
+                //验证姓名唯一
+                $name = DB::select("select stu_name from man_student where  cla_id='$cla_id'");
+                $rea_name="";
                 foreach ($name as $k => $v) {
                     foreach ($v as $kk => $vv) {
                         $rea_name[$k] = $vv;
                     }
                 }
-                if (in_array($zu_name, $rea_name)) {
-                    echo 3;
-                    die;
-                }
-                //组员名字的唯一
-                $asa = false;
-                foreach ($new_name as $v) {
+                $a = false;
+                foreach ($now_name as $v) {
                     if (in_array($v, $rea_name)) {
-                        $asa = true;
+                        $a = true;
                         break;
                     }
                 }
-                if ($asa) {
-                    echo 4;
-                    die;
-                } else {
-                    $have_care = DB::select("select stu_care from man_student where  cla_id='$cla_id'");
-                    if(empty($have_care)){
-                        $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ('$zu_name','1','$cla_id','$zu_care','$zu')";
-                        $bb = DB::statement($sql);
-                        if ($bb) {
-                            $sql1 = "select stu_id from man_student where stu_name = '$zu_name'";
-                            $as = DB::select($sql1);
-                            $stu_ids = $as[0]['stu_id'];
-                            $sql2 = "insert into man_pk_group (stu_group,cla_id) VALUES ('$stu_ids','$cla_id')";
-                            $ass = DB::statement($sql2);
-                            if ($ass) {
-                                $a = "";
-                                for ($i = 0; $i < count($new_name); $i++) {
-                                    $a[$i]['name'] = $new_name[$i];
-                                    //$a[$i]['name']=$new_name[$i];
-                                    $a[$i]['care'] = $new_care[$i];
-                                }
-                                //print_r($a);die;
-                                $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ";
-                                for ($i = 0; $i < count($a); $i++) {
-                                    //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
-                                    $sql .= "('" . $a[$i]['name'] . "','0','$cla_id','" . $a[$i]['care'] . "','$zu'),";
-                                }
-                                $sql = substr($sql, 0, -1);
-                                //echo $sql;die;
-                                $aa = DB::statement($sql);
-                                if ($aa) {
-                                    echo 1;
-                                } else {
-                                    echo 0;
-                                }
-                            }
-                        }
-                    }else{
-                        //组长Id的唯一
-                        $cares="";
-                        foreach ($have_care as $k => $v) {
-                            foreach ($v as $kk => $vv) {
-                                $cares[$k] = $vv;
-                            }
-                        }
-                        if (in_array($zu_care, $cares)) {
-                            echo 5;
-                            die;
-                        }
-                        //组员id的唯一
-                        $ert = false;
-                        foreach ($new_care as $v) {
-                            if (in_array($v, $cares)) {
-                                $ert = true;
-                                break;
-                            }
-                        }
-                        if($ert){
-                            echo 6;
-                            die;
-                        }else{
-                            $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ('$zu_name','1','$cla_id','$zu_care','$zu')";
-                            $bb = DB::statement($sql);
-                            if ($bb) {
-                                $sql1 = "select stu_id from man_student where stu_name = '$zu_name'";
-                                $as = DB::select($sql1);
-                                $stu_ids = $as[0]['stu_id'];
-                                $sql2 = "insert into man_pk_group (stu_group,cla_id) VALUES ('$stu_ids','$cla_id')";
-                                $ass = DB::statement($sql2);
-                                if ($ass) {
-                                    $a = "";
-                                    for ($i = 0; $i < count($new_name); $i++) {
-                                        $a[$i]['name'] = $new_name[$i];
-                                        //$a[$i]['name']=$new_name[$i];
-                                        $a[$i]['care'] = $new_care[$i];
-                                    }
-                                    //print_r($a);die;
-                                    $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ";
-                                    for ($i = 0; $i < count($a); $i++) {
-                                        //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
-                                        $sql .= "('" . $a[$i]['name'] . "','0','$cla_id','" . $a[$i]['care'] . "','$zu'),";
-                                    }
-                                    $sql = substr($sql, 0, -1);
-                                    //echo $sql;die;
-                                    $aa = DB::statement($sql);
-                                    if ($aa) {
-                                        echo 1;
-                                    } else {
-                                        echo 0;
-                                    }
-                                }
-                            }
-                        }
+                if ($a) {
+                    echo 3;
+                    die;//姓名唯一
+                }
+                if(in_array("",$now_name)){
+                    echo 4;die;//姓名不能为空
+                }
+
+                //验证学生号唯一
+                $care = DB::select("select stu_care from man_student where  cla_id='$cla_id'");
+                $stu_care = $_POST['stu_care'];
+                $now_care = explode(',', $stu_care);
+
+                $rea_care="";
+                foreach ($care as $k => $v) {
+                    foreach ($v as $kk => $vv) {
+                        $rea_care[$k] = $vv;
                     }
                 }
-            }
-        } else {
-
-            /***************************  如果没有这个小组    ****************************************/
-            $s_zu="";
-            foreach($k_zu as $k=>$v){
-                foreach($v as $kk=>$vv){
-                    $s_zu[$k]=$vv;
+                $b = false;
+                foreach ($now_care as $v) {
+                    if (in_array($v, $rea_care)) {
+                        $b = true;
+                        break;
+                    }
                 }
-            }
-            if (in_array($zu, $s_zu)) {
-                echo 7;
-                die;
-            }else{
-                //验证姓名的唯一
-                $name = DB::select("select stu_name from man_student where  cla_id='$cla_id'");
-                //小组成员
-                $stu_name = $_POST['stu_name'];
-                $a = strpos($stu_name, ',');
-                //组长
-                $zu_name = substr($stu_name, 0, $a);
-                //本组成员
-                $zu_y_name = substr($stu_name, $a + 1);
-                $new_name = explode(',', $zu_y_name);
+                if ($b) {
+                    echo 5;
+                    die;//学号唯一
+                }
+                if(in_array("",$now_care)){
+                    echo 6;die;//学号不能为空
+                }
 
-                //学号
-                $stu_care = $_POST['stu_care'];
-                $a = strpos($stu_care, ',');
-                //组长学号
-                $zu_care = substr($stu_care, 0, $a);
-                //本组成员学号
-                $zu_y_care = substr($stu_care, $a + 1);
-                $new_care = explode(',', $zu_y_care);
-
-                if(empty($name)) {
-                    $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ('$zu_name','1','$cla_id','$zu_care','$zu')";
+                $stu_sql="insert into man_student (stu_name,stu_pid,cla_id,stu_group,course,stu_care,re_next) VALUES";
+                $a="";
+                for ($i = 0; $i < count($now_name); $i++) {
+                    $a[$i]['rea_name'] = $now_name[$i];
+                    $a[$i]['course'] = $course[$i];
+                    $a[$i]['rea_care'] = $now_care[$i];
+                    $a[$i]['re_next'] = $re_next[$i];
+                }
+                for ($i = 0; $i < count($a); $i++) {
+                    //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
+                    $stu_sql .= "('" . $a[$i]['rea_name'] . "','0','$cla_id','$zu','" . $a[$i]['course'] . "','" . $a[$i]['rea_care'] . "','" . $a[$i]['re_next'] . "'),";
+                }
+                $sql = substr($stu_sql, 0, -1);
+                $aa = DB::statement($sql);
+                if($aa){
+                    $user_sql="insert into man_user (use_name,use_pwd,use_time,use_ip,use_names,cla_id) VALUES";
+                    for ($i = 0; $i < count($a); $i++) {
+                        //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
+                        $user_sql .= "('" . $a[$i]['rea_care'] . "','123','$time','$ip','" . $a[$i]['rea_name'] . "','$cla_id'),";
+                    }
+                    $sql = substr($user_sql, 0, -1);
+//                echo $sql;die;
                     $bb = DB::statement($sql);
-                    if ($bb) {
-                        $sql1 = "select stu_id from man_student where stu_name = '$zu_name'";
-                        $as = DB::select($sql1);
-                        $stu_ids = $as[0]['stu_id'];
-                        $sql2 = "insert into man_pk_group (stu_group,cla_id) VALUES ('$stu_ids','$cla_id')";
-                        $ass = DB::statement($sql2);
-                        if ($ass) {
-                            $a = "";
-                            for ($i = 0; $i < count($new_name); $i++) {
-                                $a[$i]['name'] = $new_name[$i];
-                                //$a[$i]['name']=$new_name[$i];
-                                $a[$i]['care'] = $new_care[$i];
+                    if($bb){
+                        $su=count($a);
+                        $sql="select use_id from man_user where cla_id=$cla_id ORDER BY use_id desc  limit $su";
+                        $aid = DB::select($sql);
+                        $use_id="";
+                        foreach ($aid as $k => $v) {
+                            foreach ($v as $kk => $vv) {
+                                $use_id[$k] = $vv;
                             }
-                            //print_r($a);die;
-                            $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ";
-                            for ($i = 0; $i < count($a); $i++) {
-                                //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
-                                $sql .= "('" . $a[$i]['name'] . "','0','$cla_id','" . $a[$i]['care'] . "','$zu'),";
-                            }
-                            $sql = substr($sql, 0, -1);
-                            //echo $sql;die;
-                            $aa = DB::statement($sql);
-                            if ($aa) {
-                                echo 1;
-                            } else {
-                                echo 0;
-                            }
+                        }
+                        $a="";
+                        for ($i = 0; $i < count($use_id); $i++) {
+                            $a[$i]['use_id'] = $use_id[$i];
+                            $a[$i]['role_id'] = 5;
+                        }
+                        $role_sql="insert into man_user_role (use_id,role_id)VALUES ";
+                        for ($i = 0; $i < count($a); $i++){
+                            //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
+                            $role_sql .= "('" . $a[$i]['use_id'] . "','" . $a[$i]['role_id'] . "'),";
+                        }
+                        $sql = substr($user_sql, 0, -1);
+//                echo $sql;die;
+                        $cc = DB::statement($sql);
+                        if($cc){
+                            echo 7;die;
                         }
                     }
                 }else{
-                    //组长名字的唯一
-                    $rea_name = "";
-                    foreach ($name as $k => $v) {
-                        foreach ($v as $kk => $vv) {
-                            $rea_name[$k] = $vv;
-                        }
-                    }
-                    if (in_array($zu_name, $rea_name)) {
-                        echo 3;
-                        die;
-                    }
-                    //组员名字的唯一
-                    $asa = false;
-                    foreach ($new_name as $v) {
-                        if (in_array($v, $rea_name)) {
-                            $asa = true;
-                            break;
-                        }
-                    }
-                    if ($asa) {
-                        echo 4;
-                        die;
-                    } else {
-                        $have_care = DB::select("select stu_care from man_student where  cla_id='$cla_id'");
-                        if(empty($have_care)){
-                            $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ('$zu_name','1','$cla_id','$zu_care','$zu')";
-                            $bb = DB::statement($sql);
-                            if ($bb) {
-                                $sql1 = "select stu_id from man_student where stu_name = '$zu_name'";
-                                $as = DB::select($sql1);
-                                $stu_ids = $as[0]['stu_id'];
-                                $sql2 = "insert into man_pk_group (stu_group,cla_id) VALUES ('$stu_ids','$cla_id')";
-                                $ass = DB::statement($sql2);
-                                if ($ass) {
-                                    $a = "";
-                                    for ($i = 0; $i < count($new_name); $i++) {
-                                        $a[$i]['name'] = $new_name[$i];
-                                        //$a[$i]['name']=$new_name[$i];
-                                        $a[$i]['care'] = $new_care[$i];
-                                    }
-                                    //print_r($a);die;
-                                    $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ";
-                                    for ($i = 0; $i < count($a); $i++) {
-                                        //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
-                                        $sql .= "('" . $a[$i]['name'] . "','0','$cla_id','" . $a[$i]['care'] . "','$zu'),";
-                                    }
-                                    $sql = substr($sql, 0, -1);
-                                    //echo $sql;die;
-                                    $aa = DB::statement($sql);
-                                    if ($aa) {
-                                        echo 1;
-                                    } else {
-                                        echo 0;
-                                    }
-                                }
-                            }
-                        }else{
-                            //组长Id的唯一
-                            $cares="";
-                            foreach ($have_care as $k => $v) {
-                                foreach ($v as $kk => $vv) {
-                                    $cares[$k] = $vv;
-                                }
-                            }
-                            if (in_array($zu_care, $cares)) {
-                                echo 5;
-                                die;
-                            }
-                            //组员id的唯一
-                            $ert = false;
-                            foreach ($new_care as $v) {
-                                if (in_array($v, $cares)) {
-                                    $ert = true;
-                                    break;
-                                }
-                            }
-                            if($ert){
-                                echo 6;
-                                die;
-                            }else{
-                                $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ('$zu_name','1','$cla_id','$zu_care','$zu')";
-                                $bb = DB::statement($sql);
-                                if ($bb) {
-                                    $sql1 = "select stu_id from man_student where stu_name = '$zu_name'";
-                                    $as = DB::select($sql1);
-                                    $stu_ids = $as[0]['stu_id'];
-                                    $sql2 = "insert into man_pk_group (stu_group,cla_id) VALUES ('$stu_ids','$cla_id')";
-                                    $ass = DB::statement($sql2);
-                                    if ($ass) {
-                                        $a = "";
-                                        for ($i = 0; $i < count($new_name); $i++) {
-                                            $a[$i]['name'] = $new_name[$i];
-                                            //$a[$i]['name']=$new_name[$i];
-                                            $a[$i]['care'] = $new_care[$i];
-                                        }
-                                        //print_r($a);die;
-                                        $sql = "insert into man_student (stu_name,stu_pid,cla_id,stu_care,stu_group) VALUES ";
-                                        for ($i = 0; $i < count($a); $i++) {
-                                            //$sql.= "('".$a[$i]['name']."','".'".$cla_id."'.$a[$i]['care']."'),";
-                                            $sql .= "('" . $a[$i]['name'] . "','0','$cla_id','" . $a[$i]['care'] . "','$zu'),";
-                                        }
-                                        $sql = substr($sql, 0, -1);
-                                        //echo $sql;die;
-                                        $aa = DB::statement($sql);
-                                        if ($aa) {
-                                            echo 1;
-                                        } else {
-                                            echo 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    echo 0;die;
                 }
             }
-
         }
     }
     /**
@@ -416,11 +303,11 @@ class GroupController extends CommonController
     {
 
 
-       $cla_id=$_SESSION['user']['cla_id'];
+//       $cla_id=$_SESSION['user']['cla_id'];
 
+        $cla_id = 9;
 
-
-        $user_list = DB::table('man_student')->where('cla_id',$cla_id)->orderBy('stu_id','desc')->paginate(5);
+        $user_list = DB::table('man_student')->where('cla_id',$cla_id)->paginate(10);
 //        print_r($user_list);
 
             return view('group/group_list',['user_list'=>$user_list]);
@@ -461,7 +348,8 @@ class GroupController extends CommonController
     public function sczh()
     {
 
-        $cla_id = $_SESSION['user']['cla_id'];
+//        $cla_id = $_SESSION['user']['cla_id'];
+        $cla_id = 9;
         //print_r($cla_id);die;
         $sql = "select stu_name,stu_pid,stu_care from man_student where cla_id = '$cla_id'";
         $res = DB::select($sql);
@@ -592,7 +480,8 @@ class GroupController extends CommonController
      * 导入
      */
     public function daoru(Request $request){
-     $cla_id = $_SESSION['user']['cla_id'];
+//     $cla_id = $_SESSION['user']['cla_id'];
+        $cla_id = 9;
 
         $PHPExcel = new \PHPExcel();
         //这里是导入excel2007 的xlsx格式，如果是2003格式可以把“excel2007”换成“Excel5"
@@ -694,7 +583,8 @@ class GroupController extends CommonController
      * 分配小组显示页面
      */
     public function fp_group(){
-        $cla_id = $_SESSION['user']['cla_id'];
+//        $cla_id = $_SESSION['user']['cla_id'];
+        $cla_id = 9;
         $sql="select stu_id,stu_name from man_student where stu_group = 0 and cla_id=$cla_id ";
         $list=DB::select($sql);
 //        print_r($list);die;
@@ -757,6 +647,48 @@ class GroupController extends CommonController
         }
 
 
+
+    }
+
+    /**
+     * 移出本组
+     */
+    public function yichu(){
+        //$cla_id=$_SESSION['user']['cla_id'];
+
+        $cla_id = 9;
+error_reporting(0);
+        $stu_id=$_POST['ids']?$_POST['ids']:"";
+        if($stu_id == ""){
+            $user_list = DB::table('man_student')->where('cla_id',$cla_id)->paginate(10);
+            return view('group/yichu_group',['user_list'=>$user_list]);
+        }else{
+
+        $res= DB::table('man_student')->where('stu_id', $stu_id)->first();
+
+        $stu_group = $res['stu_group'];
+
+        if($res['stu_pid']==1){
+            $sql2="update man_student set stu_pid=0 where stu_id = $stu_id";
+            $res=DB::update($sql2);
+            if($res){
+                $sql3="update man_student set stu_group=0 where stu_group = $stu_group";
+                $res1=DB::update($sql3);
+                if($res1){
+                    $user_list = DB::table('man_student')->where('cla_id',$cla_id)->paginate(10);
+                    return view('group/yichu_group',['user_list'=>$user_list]);
+                }
+            }
+
+        }else{
+            $sql4="update man_student set stu_group=0 where stu_id = $stu_id";
+            $re=DB::update($sql4);
+            if($re){
+                $user_list = DB::table('man_student')->where('cla_id',$cla_id)->paginate(10);
+                return view('group/yichu_group',['user_list'=>$user_list]);
+            }
+        }
+    }
 
     }
 }

@@ -28,28 +28,38 @@
         <li><label>第几组：</label>
 
             <select id="calsse"  style="width: 300px;height: 28px;  border: solid 1px #A7B5BC">
-                <option value="0">请选择小组。。。</option>
-                <option value="1">1组</option>
-                <option value="2">2组</option>
-                <option value="3">3组</option>
-                <option value="4">4组</option>
-                <option value="5">5组</option>
-                <option value="6">6组</option>
-                <option value="7">7组</option>
-                <option value="8">8组</option>
-                <option value="9">9组</option>
-                <option value="10">10组</option>
-                <option value="11">11组</option>
-                <option value="12">12组</option>
+                <option value="">请选择小组...</option>
+                <?php
+                    foreach($list as $k=>$v){
+                ?>
+                 <?php
+                    if($v['stu_group']==0){
+                        ?>
+                        <option value="<?php echo $v['stu_group']?>">不分配小组</option>
+                <?php
+                    }else{
+                ?>
+                    <option value="<?php echo $v['stu_group']?>"><?php echo $v['stu_group']?>组</option>
+
+                    <?php
+                }
+                ?>
+
+
+                ?>
+                <?php
+                    }
+                ?>
             </select>
 
         </li>
-        <li><label>组长姓名：</label><input name="stu_name[]" type="text" class="dfinput" /></li>
-        <li><label>学生号：</label><input name="stu_care[]" type="text" class="dfinput" /></li>
+
     <div id = 'e'>
 	    <div class="f">
-	    	<li><label>组员姓名：</label><input name="stu_name[]" type="text" class="dfinput" /></li>
-	    	<li><label>学生号：</label><input name="stu_care[]" type="text" class="dfinput" /></li>
+	    	<li><span>1:</span><label>组员姓名：</label><input id="stu_name" name="stu_name[]" type="text" class="dfinput" onblur="li_stu_name()"/><label id="s1"></label></li>
+	    	<li><label>课程：</label><input id="course" name="course[]" type="text" class="dfinput"/></li>
+            <li><label>重修次数：</label><input id="re_next" name="re_next[]" type="text" class="dfinput" /></li>
+	    	<li><label>学生号：</label><input id="stu_care" name="stu_care[]" type="text" class="dfinput"/></li>
 	    </div>
     </div>
     <li><label>&nbsp;</label>
@@ -76,11 +86,7 @@
 <script type="text/javascript">
     //-----表单
     $("#jian").click(function(){
-
-
-
-        if(($("input[name='stu_name[]']").length) <= 2){
-            alert("一个组最少两个人");
+        if(($("input[name='stu_name[]']").length) <= 1){
             return false;
         }
         $("#e div:last").remove();
@@ -88,38 +94,54 @@
     });
     //++++++++表单
     $("#jia").click(function(){
+        var zhi=$("span:last").text();
+
+        zhi=zhi.substr(0,1);
+        zhi++;
+//        alert(zhi);
+//        return false;
         var str = '';
         str += '<div class="f">';
-        str += '<li><label>学生姓名：</label><input name="stu_name[]" type="text" class="dfinput" /></li>'
-        str += '<li><label>学生号：</label><input name="stu_care[]" type="text" class="dfinput" /></li>'
+        str += '<li><span>'+zhi+':'+'</span><label>学生姓名：</label><input id="stu_name" name="stu_name[]" type="text" class="dfinput" /></li>';
+        str += '<li><label>课程：</label><input id="course" name="course[]" type="text" class="dfinput" /></li>';
+        str += '<li><label>重修次数：</label><input id="re_next" name="re_next[]" type="text" class="dfinput" /></li>';
+        str += '<li><label>学生号：</label><input id="stu_care" name="stu_care[]" type="text" class="dfinput" /></li>';
         str += '</div>';
-        //alert(str);
-        if(($("input[name='stu_name[]']").length)>5){
-            alert("亲！每个小组最多只能有6个人哦。。。");
+
+        if(($("input[name='stu_name[]']").length)>4){
             return false;
         }
         $('#e').append(str);
 
     });
+
     $("#bc").click(function(){
         var zu=$("#calsse").val();
-        if(zu == ""){
-            alert("请选择小组");
-            return false;
-        }else if(zu == 0){
-            alert("请选择小组");
-            return false;
-        }else{
+        //姓名
             var stu_name='';
-            var stu_care='';
             $("input[name='stu_name[]']").each(function(index,item){
                 stu_name+=','+$(this).val();
             });
             stu_name=stu_name.substr(1);
+        //课程
+            var course='';
+            $("input[name='course[]']").each(function(index,item){
+                course+=','+$(this).val();
+            });
+            course=course.substr(1);
+        //重修次数
+            var re_next='';
+            $("input[name='re_next[]']").each(function(index,item){
+                re_next+=','+$(this).val();
+            });
+            re_next=re_next.substr(1);
+        //学号
+            var stu_care='';
             $("input[name='stu_care[]']").each(function(index,item){
                 stu_care+=','+$(this).val();
             });
             stu_care=stu_care.substr(1);
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -129,6 +151,14 @@
                 alert("姓名不能为空");
                 return false;
             }
+            if(course == ""){
+                alert("课程不能为空");
+                return false;
+            }
+            if(re_next == ""){
+                alert("重修次数不能为空");
+                return false;
+            }
             if(stu_care == ""){
                 alert("学生号不能为空");
                 return false;
@@ -136,25 +166,31 @@
             $.ajax({
                 type: "POST",
                 url: "{{url('group/addin_data')}}",
-                data: "stu_name="+stu_name+"&stu_care="+stu_care+"&zu="+zu,
+                data: "stu_name="+stu_name+"&course="+course+"&re_next="+re_next+"&stu_care="+stu_care+"&zu="+zu,
                 success: function(msg){
+
                     if(msg == 0){
-                        alert("添加失败");location.href="{{url('group/ad_stu_massage')}}";
+                        alert("添加失败");
                     }else if(msg == 1){
-                        alert("添加成功");location.href="{{url('group/ad_stu_massage')}}";
-                    }else if(msg == 7){
-                        alert("该小组已经添加");
+                        alert("请完善学生的课程");
+                    }else if(msg == 2){
+                        alert("请完善学生的重修次数");
                     }else if(msg == 3){
-                        alert("这个小组的组长已存在，请您重添加吧!");
-                    }else if(msg ==4){
-                        alert("这个小组的组员已经是其他组的成员了，请您重添加吧！");
-                    }else if(msg ==5){
-                        alert("这个小组的组长学号已存在，请您重添加吧！");
-                    }else if(msg ==6){
-                        alert("这个小组的组员学号已经存在，请您重添加吧！");
+                        alert("学生已存在");
+                    }else if(msg == 4){
+                        alert("姓名不能为空");
+                    }else if(msg == 5){
+                        alert("学号已存在");
+                    }else if(msg == 6){
+                        alert("学号不能为空");
+                    }else if(msg == 7){
+                        alert("添加成功");location.href="{{url('group/group_list')}}";
+                    }else if(msg == 8){
+                        alert("该组成员超过6位了！");
                     }
                 }
             });
-        }
+
     })
 </script>
+{{--location.href="{{url('group/ad_stu_massage')}}";--}}

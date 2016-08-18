@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 <title>网站后台管理系统HTML模板--我爱模板网 www.5imoban.net</title>
     <link rel="stylesheet" type="text/css" href="{{URL::asset('')}}css/bootstrap.css"/>
 <link href="{{URL::asset('')}}css/style.css" rel="stylesheet" type="text/css" />
@@ -38,6 +39,7 @@ $(document).ready(function(){
     }
 </style>
 <body>
+<div id="show">
 
     <div class="place">
     <span>位置：</span>
@@ -65,7 +67,7 @@ $(document).ready(function(){
         <table class="tablelist">
             <thead>
             <tr>
-                <th><input name="" type="checkbox" value=""/></th>
+
                 <th>编号<i class="sort"><img src="{{URL::asset('')}}images/px.gif" /></i></th>
                 <th>姓名</th>
                 <th>组</th>
@@ -79,12 +81,41 @@ $(document).ready(function(){
             foreach($user_list as $k=>$v){
             ?>
             <tr id='qwe'>
-                <th><input name='' type='checkbox' /></th>
+
                 <th><?php echo $v['stu_id']?></th>
-                <th><span><?php echo $v['stu_name']?></span><input type='text' value='<?php echo $v['stu_name']?>' style='display: none'/></th>
-                <th><?php echo $v['stu_group']?></th>
+                <th><span><?php echo $v['stu_name']?>
+                        <?php
+                            if($v['stu_pid']==1){
+                                echo "(组长)";
+                            }else{
+                                echo "";
+                            }
+                        ?>
+                    </span><input type='text' value='<?php echo $v['stu_name']?>' style='display: none'/></th>
+                <th>
+                    <?php
+                        if($v['stu_group']==0){
+                            echo "未分配小组";
+                        }else{
+                            echo $v['stu_group']."组";
+                        }
+                    ?>
+                </th>
                 <th><?php echo $v['stu_care']?></th>
-                <th><a href='javascript:' onclick='del(<?php echo $v['stu_id']?>)'>删除</a></th>
+                <th>
+                    <?php
+                        if($v['stu_group']==0){
+                            echo "";
+                        }else{
+                    ?>
+                        <a href='javascript:' onclick='yc(<?php echo $v['stu_id']?>)'>移出本组</a>&nbsp;&nbsp;||&nbsp;
+                    <?php
+                        }
+                    ?>
+
+                    <a href='#'>修改</a>&nbsp;||&nbsp;
+                    <a href='javascript:' onclick='sc(<?php echo $v['stu_id']?>)'>删除</a>
+                </th>
                 <input type='hidden' value='<?php echo $v['stu_id']?>'/>
             </tr>
             <?php
@@ -113,14 +144,35 @@ $(document).ready(function(){
     </div>
 
 
-
+        <script type="text/javascript">
+            $('.tablelist tbody tr:odd').addClass('odd');
+        </script>
     </div>
 
-    <script type="text/javascript">
-    $('.tablelist tbody tr:odd').addClass('odd');
-    </script>
+
+</div>
 </body>
 </html>
 <script src="{{URL::asset('')}}js/jquery-1.9.1.min.js"></script>
 <script src="{{URL::asset('')}}js/jquery.selectlist.js"></script>
+<script type="text/javascript">
+    function yc(id){
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "POST",
+            url: "{{url('group/yichu')}}",
+            data: "ids="+id,
+            success: function(msg){
+               $("#show").html(msg);
+            }
+        });
+    }
 
+    function sc(id){
+        alert(id)
+    }
+</script>
