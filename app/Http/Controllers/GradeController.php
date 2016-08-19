@@ -271,8 +271,8 @@ class GradeController extends CommonController
                 $data['cla_id'] = $cla_pid;
                 $data['cla_name'] = $cla_name;
                 $data['pk_name'] = $pk_name;
-                $data['cla_class'] = DB::table('man_student')->where(["cla_id" => $cla_pid])->orderBy('stu_group', 'asc')->get();
-                $data['pk_class'] = DB::table('man_student')->where(["cla_id" => $pk_id])->orderBy('stu_group', 'asc')->get();
+                $data['cla_class'] = DB::table('man_student')->where(["cla_id" => $cla_pid])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get();
+                $data['pk_class'] = DB::table('man_student')->where(["cla_id" => $pk_id])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get();
                 $sum_cla = count($data['cla_class']);
                 $sum_pk = count($data['pk_class']);
 
@@ -344,7 +344,7 @@ class GradeController extends CommonController
                 $data['table'] = $date;
                 $re = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
                 $cla_name = $re[0]['cla_name']; //本班级名称
-                $res = DB::table('man_student')->where(["cla_id" => $cla_id])->get(); //本班级学生成绩
+                $res = DB::table('man_student')->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get(); //本班级学生成绩
                 $sum_cla = count($res);
                 $data['data'] = $res;
                 $data['cla_name'] = $cla_name;
@@ -392,7 +392,7 @@ class GradeController extends CommonController
                 $data['table'] = $date;
                 $re = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
                 $cla_name = $re[0]['cla_name']; //本班级名称
-                $res = DB::table('man_student')->where(["cla_id" => $cla_id])->get(); //本班级学生成绩
+                $res = DB::table('man_student')->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get(); //本班级学生成绩
                 $sum_cla = count($res);
                 $data['data'] = $res;
                 $data['cla_name'] = $cla_name;
@@ -504,7 +504,7 @@ class GradeController extends CommonController
         $cla_id = $request->input('id');  //查看班级的ID
         $re = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
         $cla_name = $re[0]['cla_name']; //本班级名称
-        $res = DB::table('man_student')->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->get(); //本班级学生成绩
+        $res = DB::table('man_student')->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get(); //本班级学生成绩
         $sum_cla = count($res);
         $data['data'] = $res;
         $data['cla_name'] = $cla_name;
@@ -726,7 +726,7 @@ class GradeController extends CommonController
         $cla_id = $request->input('id');
         $re = DB::table('man_class')->where(["cla_id" => $cla_id])->get();
         $cla_name = $re[0]['cla_name']; //本班级名称
-        $res = DB::table('man_student')->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->get(); //本班级学生成绩
+        $res = DB::table('man_student')->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get(); //本班级学生成绩
         $sum_cla = count($res);
         for($i=0;$i<$sum_cla;$i++){
             for($j=1;$j<=20;$j++){
@@ -746,7 +746,7 @@ class GradeController extends CommonController
                 unset($res[$k]['stu_group']);
                 unset($res[$k]['stu_pid']);
                 unset($res[$k]['cla_id']);
-
+                unset($res[$k]['re_next']);
                 if(is_array($vv)){
                     //print_r($vv);
                     $ll=$kk.'理论';
@@ -832,7 +832,7 @@ class GradeController extends CommonController
     public function sel_status( $cla_id ,$day=1 )
     {
         error_reporting(0);
-        $res = DB::table('man_student')->select($day)->where(["cla_id" => $cla_id])->get(); //本班级学生成绩
+        $res = DB::table('man_student')->select($day)->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get(); //本班级学生成绩
         //print_r($res);die;
         $data = $res;
         $sum_cla = count($data);
@@ -943,7 +943,7 @@ class GradeController extends CommonController
         $day = $request->input('day');
 
         error_reporting(0);
-        $res = DB::table('man_student')->select("$day")->where(["cla_id" => $cla_id])->get(); //本班级学生成绩
+        $res = DB::table('man_student')->select("$day")->where(["cla_id" => $cla_id])->orderBy('stu_group', 'asc')->orderBy('stu_pid','desc')->get(); //本班级学生成绩
 //        print_r($res);die;
         $data = $res;
         $sum_cla = count($data);
