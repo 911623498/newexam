@@ -15,7 +15,7 @@
         <li><a href="#">学生信息列表</a></li>
     </ul>
 </div>
-        <div>
+        <div style="float: left;">
             <table class="tablelist" style="width:200px;">
                 <thead>
                 <?php
@@ -25,6 +25,7 @@
 
                     <th><?php echo $vv['stu_name']?></th>
                     <th>PK</th>
+
                 </tr>
                 <?php
                 }
@@ -33,8 +34,8 @@
                 <tbody>
             </table>
         </div>
-        <div>
-                <table class="tablelist" style="width: 200px; margin-left:200px; float: right;">
+        <div style="float: left;">
+                <table class="tablelist"  style="width:200px;">
                     <?php
                     foreach($pk1 as $k1 => $v1){
                     ?>
@@ -44,11 +45,9 @@
                     <?php
                     }
                     ?>
-                    </thead>
-                    <tbody>
                 </table>
         </div>
-<div class="formbody">
+<div class="formbody" style="float: right;">
     <div class="formtitle"><span>本班学生基本信息</span></div>
     <?php
         foreach($person as $k => $v){
@@ -95,7 +94,7 @@
                 if(msg == 0){
                     alert("分配PK组失败");
                 }else{
-                    alert("成功");location.href="{{url('group/chose_grouper')}}";
+                 location.href="{{url('group/chose_grouper')}}";
                 }
             }
         });

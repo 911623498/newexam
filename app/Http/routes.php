@@ -111,6 +111,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('group/fp_group','GroupController@fp_group'); //分配小组
     Route::any('group/fenpei','GroupController@fenpei'); //学院小组
 
+    Route::any('group/yichu','GroupController@yichu'); //移出
+    Route::any('group/yichu_group','GroupController@yichu_group'); //移出本组
+
 
 
 

@@ -88,6 +88,7 @@
                     <th><input name="" type="checkbox" value="" checked="checked"/></th>
                     <th>编号</th>
                     <th>用户名</th>
+                    <th>密码</th>
                     <th>姓名</th>
                     <th>所属</th>
                     <th>操作</th>
@@ -101,6 +102,9 @@
                         <td>{{$v['use_id']}}</td>
                         <td>
                             {{$v['use_name']}}
+                        </td>
+                        <td>
+                            {{$v['use_pwd']}}
                         </td>
                         <td>{{$v['use_names']}}</td>
                         <td>{{$v['cla_name']}}</td>
@@ -138,6 +142,7 @@
                                    str+='<td><input name="" type="checkbox" value="" /></td>'
                                    str+='<td>'+v.use_id+'</td>'
                                    str+='<td>'+v.use_name+'</td>'
+                                   str+='<td>'+v.use_pwd+'</td>'
                                    str+='<td>'+v.use_names+'</td>'
                                    str+='<td>'+v.cla_name+'</td>'
                                    str+='<td><a href="javascript:void(0)" class="ini">初始化密码</a>&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" class="del"> 删除</a></td>'

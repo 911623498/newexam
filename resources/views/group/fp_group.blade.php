@@ -59,11 +59,11 @@
                 data: "ss="+str,
                 success: function(msg){
                     if(msg == 1){
-                        alert("分配小组成功");localtion.href="{{url('group/fenpei')}}";
+                        alert("分配小组成功");location.href="{{url('group/fp_group')}}";
                     }else{
-                        alert("分配小组失败");localtion.href="{{url('group/fenpei')}}";
+                        alert("分配小组失败");location.href="{{url('group/fp_group')}}";
                     }
-//                    alert(msg)
+              //  alert(msg)
                 }
             });
         }

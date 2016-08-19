@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 require_once (__DIR__."/../../../vendor/PHPExcel.php");
 use Illuminate\Support\Facades\Input;
 
-class GroupController extends Controller
+class GroupController extends CommonController
 {
 
     /**
@@ -17,8 +17,8 @@ class GroupController extends Controller
      */
      public function allot()
     {
-//      $cla_id = $_SESSION['user']['cla_id'];
-        $cla_id = 9;
+      $cla_id = $_SESSION['user']['cla_id'];
+       // $cla_id = 9;
         //PK 小组
         $pk="select * from man_pk_group INNER JOIN man_student on man_pk_group.stu_group=man_student.stu_id where man_pk_group.cla_id = '$cla_id'";
         $pk=DB::select($pk);
@@ -26,7 +26,10 @@ class GroupController extends Controller
         //未PK组
         //print_r($pk1);die;
         $person=DB::select("select * from man_pk_group INNER JOIN man_student on man_pk_group.stu_group=man_student.stu_id where man_pk_group.cla_id = '$cla_id' and pk_group=''");
-         $su=count($person);
+      //   print_r($person);die;
+
+        $su=count($person);
+        //echo $su;die;
         if($su%2==0){
             //print_r($person);die;
             return view('group/chose_grouper',['person'=>$person,'pk'=>$pk,'pk1'=>$pk1]);
@@ -40,8 +43,8 @@ class GroupController extends Controller
      */
     public function ad_stu_massage()
     {
-//        $cla_id = $_SESSION['user']['cla_id'];
-            $cla_id = 9 ;
+       $cla_id = $_SESSION['user']['cla_id'];
+          //  $cla_id = 9 ;
         $sql="select stu_group from man_student  where cla_id = $cla_id group BY stu_group";
         $res=DB::select($sql);
 //        print_r($res);die;
@@ -53,8 +56,8 @@ class GroupController extends Controller
     public function addin_data()
     {
         //班级
-//        $cla_id = $_SESSION['user']['cla_id'];
-        $cla_id = 9;
+       $cla_id = $_SESSION['user']['cla_id'];
+       // $cla_id = 9;
         //小组
         $zu = $_POST['zu'];
         if($zu==""){
@@ -303,9 +306,9 @@ class GroupController extends Controller
     {
 
 
-//       $cla_id=$_SESSION['user']['cla_id'];
+       $cla_id=$_SESSION['user']['cla_id'];
 
-        $cla_id = 9;
+       // $cla_id = 9;
 
         $user_list = DB::table('man_student')->where('cla_id',$cla_id)->paginate(10);
 //        print_r($user_list);
@@ -348,8 +351,8 @@ class GroupController extends Controller
     public function sczh()
     {
 
-//        $cla_id = $_SESSION['user']['cla_id'];
-        $cla_id = 9;
+     $cla_id = $_SESSION['user']['cla_id'];
+     //   $cla_id = 9;
         //print_r($cla_id);die;
         $sql = "select stu_name,stu_pid,stu_care from man_student where cla_id = '$cla_id'";
         $res = DB::select($sql);
@@ -357,7 +360,6 @@ class GroupController extends Controller
         for($i=0;$i<count($qq);$i++){
             $qqs[]=$qq[$i]['stu_care'];
         }
-
 
         $pp=DB::select("select use_name from man_user");
         for($i=0;$i<count($pp);$i++){
@@ -375,9 +377,6 @@ class GroupController extends Controller
         if($flag){
             echo 2333;die;
         }
-
-
-
 
         //print_r($res);die;
         $time=date("Y-m-d H:i:s",time());
@@ -437,12 +436,8 @@ class GroupController extends Controller
                             $asas=5;
                         }
                         $sqls.="('$use_id1','$asas')".",";
-
-
                 }
                 $sqlss=substr($sqls,0,-1);
-
-
                 $wwe=DB::statement($sqlss);
                 if($wwe){
                     echo 11;
@@ -480,8 +475,8 @@ class GroupController extends Controller
      * 导入
      */
     public function daoru(Request $request){
-//     $cla_id = $_SESSION['user']['cla_id'];
-        $cla_id = 9;
+     $cla_id = $_SESSION['user']['cla_id'];
+      //  $cla_id = 9;
 
         $PHPExcel = new \PHPExcel();
         //这里是导入excel2007 的xlsx格式，如果是2003格式可以把“excel2007”换成“Excel5"
@@ -494,7 +489,6 @@ class GroupController extends Controller
         if( $file_type =='xlsx' )
         {
             $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
-
         }
         else
         {
@@ -583,8 +577,8 @@ class GroupController extends Controller
      * 分配小组显示页面
      */
     public function fp_group(){
-//        $cla_id = $_SESSION['user']['cla_id'];
-        $cla_id = 9;
+       $cla_id = $_SESSION['user']['cla_id'];
+      //  $cla_id = 9;
         $sql="select stu_id,stu_name from man_student where stu_group = 0 and cla_id=$cla_id ";
         $list=DB::select($sql);
 //        print_r($list);die;
@@ -596,12 +590,13 @@ class GroupController extends Controller
      */
     public function fenpei(){
         $id=$_POST['ss'];
+        $cla_id=$_SESSION['user']['cla_id'];
 
         $ss=strpos($id,',');
 
         $zu_id=substr($id,0,$ss);
-        
-        $sql1="select stu_group from man_student ORDER BY stu_group DESC limit 1";
+
+        $sql1="select stu_group from man_student where cla_id=$cla_id ORDER BY stu_group DESC limit 1";
         $res1=DB::select($sql1);
 //        print_r($res1);die;
         $zu=$res1[0]['stu_group'];
@@ -611,8 +606,7 @@ class GroupController extends Controller
             $sql2="update man_student set stu_group = $new_stu_group where stu_id in ($id)";
             $res2=DB::update($sql2);
             if($res2){
-                $sql3="update man_student set stu_pid = 1 where stu_id = $zu_id";
-
+                $sql3="update man_student set stu_pid = 1 where stu_id = $zu_id and cla_id=$cla_id";
                 $res3=DB::update($sql3);
                 if($res3){
                     $sql4="select stu_care from man_student where stu_id = $zu_id";
@@ -622,7 +616,7 @@ class GroupController extends Controller
                             $stu_care = $vv;
                         }
                     }
-                    $sql5="select use_id from man_user where use_name = $stu_care";
+                    $sql5="select use_id from man_user where use_name ='$stu_care'";
                     $res5=DB::select($sql5);
                     foreach($res5 as $k=>$v){
                         foreach($v as $kk=>$vv){
@@ -632,6 +626,8 @@ class GroupController extends Controller
                     $sql5="update man_user_role set role_id = 3 where use_id = $use_id";
                     $res5=DB::update($sql5);
                     if($res5){
+                        $sql6="insert into man_pk_group (stu_group,cla_id) VALUE ('$zu_id','$cla_id')";
+                       DB::update($sql6);
                         echo 1;
                     }else{
                         echo 5;
@@ -654,10 +650,10 @@ class GroupController extends Controller
      * 移出本组
      */
     public function yichu(){
-        //$cla_id=$_SESSION['user']['cla_id'];
+        $cla_id=$_SESSION['user']['cla_id'];
 
-        $cla_id = 9;
-error_reporting(0);
+      //  $cla_id = 9;
+         error_reporting(0);
         $stu_id=$_POST['ids']?$_POST['ids']:"";
         if($stu_id == ""){
             $user_list = DB::table('man_student')->where('cla_id',$cla_id)->paginate(10);

@@ -1,4 +1,4 @@
-﻿<?php session_start();error_reporting(0);?>
+﻿<?php session_start();error_reporting(0)?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -59,8 +59,9 @@ $(function(){
 </body>
 </html>
 <script>
-    var time = "{{$time}}";
-    var tmss = parseInt(time)-1;
+     time = "{{$time}}";
+     //alert(time);
+     tmss = parseInt(time)-1;
     window.onload = totime(tmss);
     function totime(tms){
         var tm = parseInt(tms);
@@ -74,7 +75,7 @@ $(function(){
         var d=new Date(parseInt(nS) * 1000);
         str+= d.getFullYear()+"-";
         str+= d.getMonth()+1+"-";
-        str+= d.getDay()+" ";
+        str+= d.getDate()+" ";
         str+= d.getHours()+":";
         str+= d.getMinutes()+":";
         str+= d.getSeconds()+"";

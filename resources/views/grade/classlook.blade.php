@@ -99,27 +99,28 @@
                             @endif
                         </td>
                         {{--<td>{{$v['stu_care']}}</td>--}}
-                        <td><p><font style="color:#0000ff"><?php echo $v[1][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[1][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[2][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[2][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[3][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[3][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[4][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[4][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[5][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[5][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[6][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[6][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[7][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[7][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[8][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[8][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[9][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[9][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[10][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[10][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[11][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[11][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[12][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[12][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[13][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[13][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[14][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[14][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[15][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[15][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[16][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[16][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[17][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[17][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[18][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[18][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[19][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[19][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v[20][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[20][0]?></font></p></td>
-                        <td><p><font style="color:#0000ff"><?php echo $v['yueekao'][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v['yueekao'][0]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[1][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[1][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[2][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[2][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[3][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[3][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[4][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[4][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[5][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[5][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[6][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[6][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[7][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[7][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[8][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[8][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[9][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[9][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[10][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[10][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[11][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[11][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[12][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[12][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[13][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[13][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[14][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[14][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[15][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[15][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[16][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[16][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[17][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[17][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[18][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[18][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[19][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[19][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v[20][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v[20][1]?></font></p></td>
+                        <td><p><font style="color:#0000ff"><?php echo $v['yueekao'][0]?></font><br/>&nbsp;&nbsp;&nbsp;<font style="color:red"><?php echo $v['yueekao'][1]?></font></p></td>
+
                     </tr>
                 @endforeach
                 </tbody>

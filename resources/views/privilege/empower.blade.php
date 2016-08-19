@@ -2,7 +2,6 @@
 <html >
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>网站后台管理系统HTML模板--我爱模板网 www.5imoban.net</title>
 <link href="{{URL::asset('')}}css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="{{URL::asset('')}}js/jquery.js"></script>
 
@@ -52,7 +51,7 @@ $(document).ready(function(){
                 </tr>
                 @foreach($power as $k=>$v)
                 <tr>
-                    <td><center> <input type="checkbox" name="pow_id[]" class="FirstLevel"  value="{{$v['pow_id']}}" <?php if($v['call']==1){echo "checked";}  else{echo "";} ?>/>&nbsp;&nbsp;{{$v['pow_name']}}</center></td>
+                    <td style="width: 120px;"><center> <input type="checkbox" name="pow_id[]" class="FirstLevel"  value="{{$v['pow_id']}}" <?php if($v['call']==1){echo "checked";}  else{echo "";} ?>/>&nbsp;&nbsp;{{$v['pow_name']}}</center></td>
                 <td>@foreach($v['son'] as $kk=>$vv)
                         <input type="checkbox" name="pow_id[]" class="secondLevel"  parent_id="{{$v['pow_id']}}"  value="{{$vv['pow_id']}}" <?php if($vv['call']==1){echo "checked";}  else{echo "";} ?> />&nbsp;&nbsp;{{$vv['pow_name']}}&nbsp;&nbsp;&nbsp;&nbsp;
                     @endforeach

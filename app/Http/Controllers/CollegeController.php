@@ -185,7 +185,7 @@ class CollegeController extends CommonController
                     ['cla_name' =>"$name", 'cla_intro' => "$info"]
                 );
                 if($id){
-					$userId = $this->generate_username(6);
+					$userId = $this->generate_username(4);
                     $id = DB::table('man_user')->insertGetId(
                         array('use_name' => "$userId", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
                     );
@@ -305,16 +305,23 @@ public function pkclass(){
 //        print_r($user);
 		$pk = DB::table('man_class')->where('cla_pk', "$name")->first();
 		if($pk){
-			 echo "3";
+            $pk = DB::table('man_class')->where('cla_id', "$id")->first();
+            if($user['cla_pid']==$pk['cla_pid']){
+                $re=DB::table('man_class')
+                    ->where('cla_id', "$id")
+                    ->update( ['cla_pk'=>$user['cla_name']]);
+                echo "3";
+            }else{
+                echo "2";
+            }
+
 		}else{
 			$pk = DB::table('man_class')->where('cla_id', "$id")->first();
 			if($user['cla_pid']==$pk['cla_pid']){
 				$re=DB::table('man_class')
 					->where('cla_id', "$id")
 					->update( ['cla_pk'=>$user['cla_name']]);
-				$re=DB::table('man_class')
-					->where('cla_id', $user['cla_id'])
-					->update( ['cla_pk'=>$pk['cla_name']]);
+
 				echo "1";
 			}else{
 				echo "2";
@@ -361,7 +368,7 @@ public function jdadd(){
                     ['cla_name' =>"$name", 'cla_intro' => "$info",'cla_pid'=>"$pid"]
                 );
                 if($id){
-					$userId = $this->generate_username(6);
+					$userId = $this->generate_username(4);
                     $id = DB::table('man_user')->insertGetId(
                         array('use_name' => "$userId", 'use_pwd' => 123, 'use_names'=>"$name",'cla_id'=>"$id")
                     );

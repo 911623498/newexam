@@ -135,7 +135,8 @@
                         str += "<td>"+item.cla_name+"</td>";
                         str += "<td>"+item.cla_intro+"</td>";
                         str += "<td>"
-                        str += "<a href={{URL('grade/look_class')}}?id="+item.cla_id+" class='tablelink'>查看</a>";
+                        str += "<a href={{URL('grade/look_class')}}?id="+item.cla_id+" class='tablelink'>查看</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                        str += "<a href={{URL('grade/dc')}}?id="+item.cla_id+" class='tablelink'>导出</a>";
                         str += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         str += "</td>"
                         str += "</tr>"

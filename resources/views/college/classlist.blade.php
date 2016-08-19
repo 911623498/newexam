@@ -139,7 +139,7 @@ $(document).ready(function(){
               
                 <div class="tipright">
                     <p>班级名称：<input type="text" id="cla_name" name="cla_name" onblur="fun1()"/></p>
-					<p>班主任：<input type="text" id="cla_tea" name="cla_tea"/></p>
+					<p>讲师：<input type="text" id="cla_tea" name="cla_tea"/></p>
 					<p>门牌号：<input type="text" id="cla_mph" name="cla_mph"/></p>
                     <p>课程：<input type="text" id="cla_intro" name="cla_intro"/></p>
                     <input type="hidden" id="id" name="id" value=""/>
@@ -211,6 +211,15 @@ $(document).ready(function(){
     function disp_prompt(id)
     {
 //        alert(id)
+        //获取当前网址，如： http://localhost:8083/uimcardprj/share/meun.jsp
+        var curWwwPath=window.document.location.href;
+        //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+        var pathName=window.document.location.pathname;
+        var pos=curWwwPath.indexOf(pathName);
+        //获取主机地址，如： http://localhost:8083
+        var localhostPaht=curWwwPath.substring(0,pos);
+        //获取带"/"的项目名，如：/uimcardprj
+        var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
         var cla_name=prompt("请选择PK班级：","班级名称");
         if(cla_name){
             $.ajax({
@@ -224,12 +233,13 @@ $(document).ready(function(){
                         alert("班级不存在,请重新输入");
                         $("#cla_name").val("");
                     }else if(msg==2){
-                        alert("请选择同系的班级！")
+                        alert("请选择同系的班级！");
                     }else if(msg==1){
-                        alert("选择PK班级成功！")
-                        location.href="http://www.getinfo.com/newexam/public/college/classes";
+                        alert("选择PK班级成功！");
+                        window.location.href=localhostPaht+projectName+"/public/college/classes";
                     }else if(msg==3){
-                        alert("此班级已于别的班级进行PK，请重新选择！")
+                        alert("此班级已于别的班级进行PK,您选择的班级将交互PK！");
+                        window.location.href=localhostPaht+projectName+"/public/college/classes";
                     }else{
                         alert("错误！")
                     }

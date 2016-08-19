@@ -55,7 +55,7 @@ class GradeController extends CommonController
                 //echo $class[0]['cla_id'];die;
                 $user_class=DB::select("select * from man_class where cla_id =".$class[0]['cla_id']);
 
-                $group=DB::select("select * from man_student where cla_id =" .$class[0]['cla_id']." and stu_pid=1 and stu_care=".$class[0]['use_name']."" );
+                $group=DB::select("select * from man_student where cla_id =" .$class[0]['cla_id']." and stu_pid=1 and stu_care='".$class[0]['use_name']."'" );
                 //print_r($group);die;
                 $num=count($group);
                 return view('grade.group',['data'=>$group,'num'=>$num,'class_name'=>$user_class[0]['cla_name']]);
@@ -304,15 +304,16 @@ class GradeController extends CommonController
                         }
                     }
                 }
-
                 //pk班级分数
                 for($i=0;$i<$sum_pk;$i++){
                     for($j=1;$j<=20;$j++){
                         $data['pk_class'][$i][$j] = explode(',',$data['pk_class'][$i][$j]);
+                          //print_r($data);die;
                         foreach($data['pk_class'][$i][$j] as $k=>$v){
+                           // print_r($v);
                             if($v<90)
                             {
-                                $data['pk_class'][$i][$j][$k] = str_replace($data['data'][$i][$j][$k],$data['pk_class'][$i][$j][$k],"<font color='gray'>".$data['pk_class'][$i][$j][$k]."</font>");
+                                $data['pk_class'][$i][$j][$k] = str_replace($data['pk_class'][$i][$j][$k],$data['pk_class'][$i][$j][$k],"<font color='gray'>".$data['pk_class'][$i][$j][$k]."</font>");
                             }
                             if($v=="")
                             {
@@ -322,7 +323,7 @@ class GradeController extends CommonController
                     }
                     $data['pk_class'][$i]['yuekao'] = explode(',',$data['pk_class'][$i]['yuekao']);
                 }
-                // print_r($data);die;
+
                 //本班查询默认第一天成绩成材率
                 $data['arr1'] = $this->sel_status($cla_id);
                 //pk班查询默认第一天成绩成材率
@@ -745,6 +746,7 @@ class GradeController extends CommonController
                 unset($res[$k]['stu_group']);
                 unset($res[$k]['stu_pid']);
                 unset($res[$k]['cla_id']);
+
                 if(is_array($vv)){
                     //print_r($vv);
                     $ll=$kk.'理论';
@@ -756,8 +758,6 @@ class GradeController extends CommonController
             }
         }
 //        print_r($res);die;
-
-
 //创建对象
         $excel=new PHPExcel();
 //        print_r($excel);die;
@@ -765,7 +765,7 @@ class GradeController extends CommonController
         $letter = array('A','B','C','D','E','F','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
             'AA','AB','AC','AD','AE','AF','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ',);
 //表头数组
-        $tableheader = array('姓名','学号','1理论','1机试','2理论','2机试','3理论','3机试','4理论','4机试','5理论',
+        $tableheader = array('姓名','所学课程','学号','1理论','1机试','2理论','2机试','3理论','3机试','4理论','4机试','5理论',
             '5机试','6理论','6机试','7理论','7机试','8理论','8机试','9理论','9机试','10理论','10机试',
             '11机试','11机试','12理论','12机试','13理论','13机试','14理论','14机试','15理论','16机试','16理论','16机试',
             '17机试','17机试','18理论','18机试','19理论','19机试','20理论','20机试','月考理论','月考机试');
